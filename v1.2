@@ -162,8 +162,7 @@ wait(2)
 
 ---------------- Warn Control ---------------------------------
 local oldWarn = warn -- Store the original warn function
-warn = function(...)
-    Data = table.concat({...}, " ") -- Concatenate arguments into a single string
+warn = function(data)
     if data == "Tested pet entity pathfinding for a path that is too far away from its target!" then 
         return 
     end
@@ -177,7 +176,7 @@ warn = function(...)
         return
     end
 
-    return oldWarn(...)
+    return oldWarn(data)
 end
 ---------------------------------------------------------------
 
