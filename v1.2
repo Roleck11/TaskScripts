@@ -89,6 +89,7 @@ task.spawn(function()
             end
         end
     end
+    wait(1)
     game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("DailyLoginApp")
     if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
         for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
@@ -99,6 +100,7 @@ task.spawn(function()
             end 
         end
     end
+    wait(1)
     game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
     if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
         for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
@@ -115,14 +117,34 @@ for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
   v:Disable()
 end
 
-------- Transition App Disabled (whatever it is)
+---------------- Warn Control ---------------------------------
+local oldWarn = warn -- Store the original warn function
+warn = function(data)
+    if data == "Tested pet entity pathfinding for a path that is too far away from its target!" then 
+        return 
+    end
+    if data == "Tested pet entity pathfinding for a path that is too far away from its target!" or
+       data == "[Pathfinder] Pathfinder Failed:" or
+       data:match("AccurateTime sync inaccuracy, varianc") or
+       data == "[AvatarEditorFocusSwitcher] Player's Character is nil" or
+       data:match("[CharacterHider]") or
+       data:match("Player:Move") or
+       data:match("Notch") then
+        return
+    end
+
+    return oldWarn(data)
+end
+---------------------------------------------------------------
+
+------- Transition App Disabled (whatever it is) --------
 require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).transition = function() return end 
 require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).sudden_fill = function() return end
 if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
     game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
 end
-
-game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0
+---------------------------------------------------
+game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0 -- Disable Walkspeed
 
 local args = {
     [1] = false
@@ -159,26 +181,6 @@ end
 EquipMainPet()
 
 wait(2)
-
----------------- Warn Control ---------------------------------
-local oldWarn = warn -- Store the original warn function
-warn = function(data)
-    if data == "Tested pet entity pathfinding for a path that is too far away from its target!" then 
-        return 
-    end
-    if data == "Tested pet entity pathfinding for a path that is too far away from its target!" or
-       data == "[Pathfinder] Pathfinder Failed:" or
-       data:match("AccurateTime sync inaccuracy, varianc") or
-       data == "[AvatarEditorFocusSwitcher] Player's Character is nil" or
-       data:match("[CharacterHider]") or
-       data:match("Player:Move") or
-       data:match("Notch") then
-        return
-    end
-
-    return oldWarn(data)
-end
----------------------------------------------------------------
 
 -- Main --
 local Fsys = require(game:GetService("ReplicatedStorage"):WaitForChild("Fsys")).load
