@@ -177,22 +177,21 @@ local MainPet = RoT(Pets)
 function EquipMainPet()
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(MainPet)
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(MainPet)
-    wait(2)
-    PetName = Fsys("ClientData").get("pet_char_wrapper")["char"]
-    print("======= Pet Name: ", PetName)
 end
 
-
 EquipMainPet()
-
+wait(2)
 -- Main --
+
+PetName = Fsys("ClientData").get("pet_char_wrapper")["char"]
+print("======= Pet Name: ", PetName)
 
 spawn(function()
     while true and wait(60) do
-        if not workspace.Pets:FindFirstChild(PetName) then 
+        if not game.Workspace.Pets:FindFirstChild(tostring(PetName)) then 
             EquipMainPet()
         end
-    end 
+    end
 end)
 
 
