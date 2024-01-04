@@ -19,23 +19,21 @@ for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").
 end
 
 ---------------- Warn Control ---------------------------------
-local oldWarn = warn -- Store the original warn function
-warn = function(data)
+local old;old = hookfunction(warn,function(data)
     if data == "Tested pet entity pathfinding for a path that is too far away from its target!" then 
-        return 
-    end
-    if data == "Tested pet entity pathfinding for a path that is too far away from its target!" or
-       data == "[Pathfinder] Pathfinder Failed:" or
-       data:match("AccurateTime sync inaccuracy, varianc") or
-       data == "[AvatarEditorFocusSwitcher] Player's Character is nil" or
-       data:match("[CharacterHider]") or
-       data:match("Player:Move") or
-       data:match("Notch") then
-        return
-    end
-
-    return oldWarn(data)
-end
+       return 
+   end
+   if data == "Tested pet entity pathfinding for a path that is too far away from its target!" or
+      data == "[Pathfinder] Pathfinder Failed:" or
+      data:match("AccurateTime sync inaccuracy, varianc") or
+      data == "[AvatarEditorFocusSwitcher] Player's Character is nil" or
+      data:match("[CharacterHider]") or
+      data:match("Player:Move") or
+      data:match("Notch") then
+       return
+   end
+   return old(data)
+end)
 ---------------------------------------------------------------
 
 getgenv().firesignal = function(signal, ...)
