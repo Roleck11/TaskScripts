@@ -115,6 +115,10 @@ task.spawn(function()
                 clickUiButton(v,true)
                 task.wait()
                 clickUiButton(v,false)
+                wait(0.5)
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
             end 
         end
     end
