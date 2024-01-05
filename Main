@@ -483,6 +483,11 @@ while true do
                     wait(1)
                     timeout = timeout - 1
                 until not ailmentMonitor:FindFirstChild(taskName) or timeout <= 0
+
+                if not #workspace.Interiors:GetChildren() == 0 then
+                    wait(60)
+                    GoToHome()
+                end
             end)
 
             if not success then
