@@ -139,6 +139,9 @@ for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
   v:Disable()
 end
 
+-----------------------------------------------------
+local RunService = game:GetService("RunService")
+RunService:Set3dRenderingEnabled(false)
 ------- Transition App Disabled (whatever it is) --------
 require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).transition = function() return end 
 require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).sudden_fill = function() return end
