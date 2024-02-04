@@ -147,6 +147,19 @@ end)
 for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
   v:Disable()
 end
+---------- Extra GUI Control and Buttons and IMAGES blah blah -------------
+game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Enabled = false
+game:GetService("Players").LocalPlayer.PlayerGui.InteractionsApp.Enabled = false
+game:GetService("Players").LocalPlayer.PlayerGui.NavigatorApp.Enabled = false
+
+local PlayerGui = game:GetService("Players").LocalPlayer.PlayerGui
+PlayerGui.ChildAdded:Connect(function(Child)
+    if Child.Name == "player_name" then
+        Child:Destroy()
+    elseif Child.Name == "friendship_progression" then
+        Child:Destroy()
+    end
+end)
 
 ------- Transition App Disabled (whatever it is) --------
 require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).transition = function() return end 
@@ -590,11 +603,11 @@ local ailmentMonitor = player.PlayerGui.AilmentsMonitorApp.Ailments
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Roleck11/TaskScripts/main/LibSource')))()
 
 local Window = OrionLib:MakeWindow({
-    Name = "RoloxBot - Adopt Me",
+    Name = Player.Name .. " - RoloxBot",
     HidePremium = false, 
     SaveConfig = false, 
     ConfigFolder = "RoloxBotConfig",
-    IntroEnabled = true,
+    IntroEnabled = false,
     IntroText = "RoloxBot - Adopt Me",
     IntroIcon = "rbxassetid://887521804",
     Icon = "rbxassetid://887521804",
