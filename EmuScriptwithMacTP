@@ -1,0 +1,707 @@
+
+_G.AgingPotionMode = true
+_G.EggHatchMode = false
+EggName = "desert_2024_egg"
+
+
+if not game:IsLoaded() then
+    while not game:IsLoaded() do wait(1) end
+end
+
+if _G.AgingPotionMode and _G.EggHatchMode or not _G.AgingPotionMode and not _G.EggHatchMode then
+    game.Players.LocalPlayer:Kick("Select ONE Mode")
+end
+
+print("Executed Roleck Task Script")
+repeat task.wait() until game:IsLoaded() and game:GetService("ReplicatedStorage"):FindFirstChild("ClientModules") and game:GetService("ReplicatedStorage").ClientModules:FindFirstChild("Core") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager").Apps:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp"):FindFirstChild("Whiteout")
+
+if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
+    game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
+end
+
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+  v:Disable()
+end
+
+
+for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").Fsys).load("RouterClient").init, 4)) do
+    v.Name = i
+end
+
+---------------- Warn Control ---------------------------------
+local old;old = hookfunction(warn,function(data)
+    if data == "Tested pet entity pathfinding for a path that is too far away from its target!" then 
+       return 
+   end
+   if data == "Tested pet entity pathfinding for a path that is too far away from its target!" or
+      data == "[Pathfinder] Pathfinder Failed:" or
+      data:match("AccurateTime sync inaccuracy, varianc") or
+      data == "[AvatarEditorFocusSwitcher] Player's Character is nil" or
+      data:match("[CharacterHider]") or
+      data:match("Player:Move") or
+      data:match("Notch") then
+       return
+   end
+   return old(data)
+end)
+---------------------------------------------------------------
+
+getgenv().firesignal = function(signal, ...)
+	local connections = getconnections(signal)
+	for _, connection in ipairs(connections) do
+		connection:Fire(...)
+	end
+end
+
+function clickUiButton(button, state)
+    local buttonPosX = button.AbsolutePosition.X + button.AbsoluteSize.X / 2
+    local buttonPosY = button.AbsolutePosition.Y + 66
+    game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonPosX, buttonPosY, 0, state, game, 1)
+end
+
+repeat
+    if game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Visible then
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.MouseButton1Click)
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.MouseButton1Down)
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Activated)
+    end
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.ChooseParent.Visible then
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.ChooseParent.MouseButton1Click)
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.ChooseParent.MouseButton1Down)
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.ChooseParent.Activated)
+    end
+    task.wait(1.1)
+    -- After Choose Parent
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end
+        end
+    end
+    game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("DailyLoginApp")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
+            if v.Name == "ClaimButton" then
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end 
+        end
+    end
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end
+        end
+    end
+until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+
+task.spawn(function()
+    repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    task.wait(4)
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end
+        end
+    end
+    wait(0.5)
+    game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("DailyLoginApp")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
+            if v.Name == "ClaimButton" then
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+                wait(0.5)
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end 
+        end
+    end
+    wait(0.5)
+    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
+    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
+            if v.ClassName == "ImageButton" then 
+                clickUiButton(v,true)
+                task.wait()
+                clickUiButton(v,false)
+            end
+        end
+    end
+end)
+
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+  v:Disable()
+end
+---------- Extra GUI Control and Buttons and IMAGES blah blah -------------
+game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Enabled = false
+game:GetService("Players").LocalPlayer.PlayerGui.InteractionsApp.Enabled = false
+game:GetService("Players").LocalPlayer.PlayerGui.NavigatorApp.Enabled = false
+
+------- Transition App Disabled (whatever it is) --------
+require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).transition = function() return end 
+require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).sudden_fill = function() return end
+if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
+    game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
+end
+---------------------------------------------------
+local Fsys = require(game:GetService("ReplicatedStorage"):WaitForChild("Fsys")).load
+
+game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0 -- Disable Walkspeed
+
+local args = {
+    [1] = false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("AvatarAPI/SetPlayerOnPlayerCollision"):FireServer(unpack(args))
+
+---------------- Equip Pet ----------------------
+
+for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+    if v.id ~= "practice_dog" then    
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
+        break
+    end
+end
+
+Bucks = tonumber(require(game:service'ReplicatedStorage'.Fsys).load("ClientData").get("money"))
+print("Bucks:", Bucks)
+Pets = {}
+local Player = game:GetService("Players").LocalPlayer
+local RS = game:GetService("ReplicatedStorage")
+
+function RoT(t)
+    for i, v in pairs(t) do
+        return v
+    end
+end
+
+function GetEggAmount()
+    EggsInAcc = {}
+    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        if v.id == EggName then        
+            table.insert(EggsInAcc, i)
+        end
+    end
+    return #EggsInAcc
+end
+
+function GetEgg()
+    print("Get Egg Function Called")
+    if GetEggAmount() == 0 then
+        RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", EggName, {})
+        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            if v.id == EggName then        
+                return i
+            end
+        end
+    elseif GetEggAmount() > 0 then
+        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            if v.id == EggName then        
+                return i
+            end
+        end
+    end
+end             
+
+if _G.AgingPotionMode then
+    print("if AgingPotionMode")
+    Pets = {}
+    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        if v.properties.age == 6 then        
+            table.insert(Pets, i)
+        end
+    end
+
+    if #Pets == 0 then
+        print("0 Full Gown Pets ------ ======= -----")
+        Pets = {}
+        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            if v.id ~= "practice_dog" then    
+                table.insert(Pets, i)
+            end
+        end
+    end
+    MainPet = RoT(Pets)
+
+elseif _G.EggHatchMode then
+    print("elseif HatchMode")
+    if GetEggAmount() == 0 then
+        Pets = {}
+        EggsInAcc = {}
+        if Bucks > 750 then
+            RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", EggName, {})
+            for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+                if v.id == EggName then        
+                    table.insert(EggsInAcc, i)
+                end
+            end      
+        else
+            for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+                if v.id ~= "practice_dog" then    
+                    table.insert(Pets, i)
+                end
+            end      
+        end
+        MainPet = RoT(Pets)
+        _G.EggHatchMode = false
+        _G.AgingPotionMode = true  
+    end  
+end
+
+---- Main ----
+if _G.AgingPotionMode then
+    function EquipMainPet()
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(MainPet)
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(MainPet)
+    end
+
+    EquipMainPet()
+    wait(2)
+
+    PetName = Fsys("ClientData").get("pet_char_wrapper").char
+    print("======= Pet Name: ", PetName, "=======")
+
+    spawn(function()
+        while true and wait(60) do
+            if not game.Workspace.Pets:FindFirstChild(tostring(PetName)) then 
+                EquipMainPet()
+            end
+        end
+    end)
+end
+
+if _G.EggHatchMode then
+    function EquipEgg()
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(GetEgg())
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(GetEgg())
+    end
+
+    EquipEgg()
+    wait(2)
+
+    print("======= Egg Hatching Started =======")
+    spawn(function()
+        while true and wait(5) do
+            PetEquippedWithID = Fsys("ClientData").get("pet_char_wrapper").pet_id
+            if PetEquippedWithID ~= EggName then 
+                EquipEgg()
+            end
+        end
+    end)
+end
+
+
+---------------------- MAIN TASKS --------------------
+
+function GetFurniture(name)
+    for _,v in pairs(workspace.HouseInteriors.furniture:GetChildren()) do 
+        if v:IsA("Folder") and v:FindFirstChildOfClass("Model") then 
+           if tostring(string.lower(v:FindFirstChildOfClass("Model").Name)):match(string.lower(name)) then 
+              return v:FindFirstChildOfClass("Model"):GetAttribute("furniture_unique")
+           end
+        end
+    end
+end
+
+function buyFurniture(furnitureName)
+    local args = {
+        [1] = {
+            [1] = {
+                ["properties"] = {
+                    ["cframe"] = CFrame.new(9e9, 9e9, 9e9)
+                },
+                ["kind"] = furnitureName
+            }
+        }
+    }
+    game:GetService("ReplicatedStorage").API:FindFirstChild("HousingAPI/BuyFurnitures"):InvokeServer(unpack(args))
+    wait(1)
+end
+
+aPetCrib = GetFurniture("Crib") or GetFurniture("PetBed")
+aPetShower = GetFurniture("Shower") or GetFurniture("Bath")
+
+if not aPetCrib then
+    buyFurniture("basiccrib")
+    print("------ Notification ------ Bought Crib")
+end
+
+if not aPetShower then
+    buyFurniture("stylishshower")
+    print("------ Notification ------ Bought Shower")
+end
+
+local Player = game.Players.LocalPlayer
+local player = game.Players.LocalPlayer
+local character = player.Character
+local get_thread_context = get_thread_context or getthreadcontext or getidentity or syn.get_thread_identity
+local get_thread_identity = get_thread_context
+local set_thread_context = set_thread_context or setthreadcontext or setidentity or syn.set_thread_identity
+local set_thread_identity = set_thread_context
+
+local Baths = {
+    "StylishShower",
+    "CheapBathtub",
+    "ModernShower",
+    "Bathtub",
+    "GingerbreadShower",
+    "HotTub"
+}
+
+local Beds = {
+    "FancyPetBed",
+    "ModernPetBed",
+    "CircularPetBed",
+    "RectangularPetBed",
+    "NormalCrib",
+    "BasicCrib",
+    "RoyalCrib",
+    "PoshCrib",
+}
+
+local LocationFunction
+LocationFunction = Fsys("InteriorsM").enter_smooth
+
+local SetLocation = function(A, B, C)
+    local O = get_thread_identity()
+    set_thread_identity(2)
+    Location(A, B, C)
+    set_thread_identity(O)
+end
+
+local GoToMainMap = function()
+    SetLocation("MainMap", "Neighborhood/MainDoor")
+    return false
+end
+
+local GoToHome = function()
+    SetLocation("housing", "MainDoor", {["house_owner"] = Player})
+    Player.Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -8))
+    return false
+end
+
+local GoToPlace = function(Name)
+    SetLocation(Name, "MainDoor", {})
+end
+
+---------------- Function Tasks ------------------
+
+-- Food / Hungry Task
+function HungryTask()
+    local Player = game.Players.LocalPlayer
+    game.ReplicatedStorage:FindFirstChild("ShopAPI/BuyItem",true):InvokeServer('food', 'pizza', {})
+    game.ReplicatedStorage:FindFirstChild("ToolAPI/BakeItem",true):InvokeServer()
+    while Player.Character:FindFirstChild('PizzaTool') do wait() end
+    while not Player.Character:FindFirstChild('PizzaTool') do wait() end
+    local Foods = require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food or {}
+    local Pizza
+    for i,v in pairs(Foods) do
+        if v.id == 'pizza' then
+            Pizza = v.unique
+            break
+        end
+    end
+    if not Pizza then
+        return
+    end
+    wait(2)
+    game.ReplicatedStorage:FindFirstChild("PetObjectAPI/CreatePetObject",true):InvokeServer("__Enum_PetObjectCreatorType_2", {["unique_id"] = Pizza})
+    wait(1)
+    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Pizza)
+end
+
+-- Dirty / Shower Task
+
+function DirtyTask()
+    GoToHome()
+    wait(2)
+    while #game.Workspace.Interiors:GetChildren() ~= 0 do
+        wait(1)
+    end
+    local Showers = function(Name)
+        Player.Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -6)) 
+        for i, v in pairs(Workspace.HouseInteriors.furniture:GetChildren()) do
+            if v:FindFirstChildWhichIsA("Model") and (table.find(Baths, v:FindFirstChildWhichIsA("Model").Name)) then
+                local String = string.split(v.Name,"true/")[2]
+                return String
+            end
+        end
+    end
+
+    local args = {
+        [1] = game:GetService("Players").LocalPlayer,
+        [2] = Showers(),
+        [3] = "UseBlock",
+        [4] = {
+            ["cframe"] = Player.Character.HumanoidRootPart.CFrame
+        },
+        [5] = Fsys("ClientData").get("pet_char_wrapper").char
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+end
+
+-- Sleeping Task
+
+function SleepyTask()
+    GoToHome()
+    wait(2)
+    while #game.Workspace.Interiors:GetChildren() ~= 0 do
+        wait(1)
+    end
+    local Bed = function(Name)
+        Player.Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -6)) 
+        for i, v in pairs(Workspace.HouseInteriors.furniture:GetChildren()) do
+            if v:FindFirstChildWhichIsA("Model") and (table.find(Beds, v:FindFirstChildWhichIsA("Model").Name)) then
+                local String = string.split(v.Name,"/f")[2]
+                return "f".. String
+            end
+        end
+    end
+
+    local args = {
+        [1] = game:GetService("Players").LocalPlayer,
+        [2] = Bed(),
+        [3] = "UseBlock",
+        [4] = {
+            ["cframe"] = Player.Character.HumanoidRootPart.CFrame
+        },
+        [5] = Fsys("ClientData").get("pet_char_wrapper").char
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+end
+
+-- Thirsty Task
+
+function ThirstyTask()
+    game.ReplicatedStorage:FindFirstChild("ShopAPI/BuyItem",true):InvokeServer('food', 'tea', {})
+    local Foods = require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[Player.Name].inventory.food or {}
+    local Tea
+    for i, v in pairs(Foods) do
+        if v.id == 'tea' then
+            Tea = v.unique
+            break
+        end
+    end
+    if not Tea then
+        return
+    end
+    wait(2)
+    game.ReplicatedStorage:FindFirstChild("PetObjectAPI/CreatePetObject",true):InvokeServer("__Enum_PetObjectCreatorType_2", {["unique_id"] = Tea})
+    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Tea)
+end
+
+-- School Task
+function SchoolTask()
+    GoToPlace('School')
+    wait(1)
+    School = workspace.Interiors:FindFirstChild("School")
+    if School then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.School.WorldPivot.Position + Vector3.new(0, 0, -50))
+    end
+end
+
+-- Sick / Hospital Task
+function SickTask()
+    game.ReplicatedStorage:FindFirstChild("MonitorAPI/HealWithDoctor",true):FireServer()
+end
+
+-- Pizza Party Task
+function PizzaPartyTask()
+    GoToPlace("PizzaShop")
+    wait(1)
+    PizzaShop = workspace.Interiors:FindFirstChild("PizzaShop")
+    if PizzaShop then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.PizzaShop.WorldPivot.Position + Vector3.new(0, 0, -50))
+    end
+end
+
+-- Bored / Playground Task
+function BoredTask()
+    GoToMainMap()
+    Player.Character.HumanoidRootPart.CFrame = CFrame.new(Workspace.StaticMap.Park.AilmentTarget.Position + Vector3.new(0, 5, 0))
+end
+
+-- Camping Task
+function CampingTask()
+    GoToMainMap()
+    Player.Character.HumanoidRootPart.CFrame = CFrame.new(Workspace.StaticMap.Campsite.CampsiteOrigin.Position + Vector3.new(0, 5, 0))
+end
+
+-- Pool Party Task
+function PoolPartyTask()
+    GoToMainMap()
+    Player.Character.HumanoidRootPart.CFrame = CFrame.new(Workspace.StaticMap.Pool.PoolOrigin.Position + Vector3.new(0, 5, 0))
+end
+
+-- Salon Task
+function SalonTask()
+    GoToPlace("Salon")
+    wait(1)
+    Salon = workspace.Interiors:FindFirstChild("Salon")
+    if Salon then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.Salon.WorldPivot.Position + Vector3.new(0, 0, -10))
+    end
+end
+
+-- Adoption Party Task
+function AdoptionPartyTask()
+    GoToPlace('Nursery')
+    wait(1)
+    Nursery = workspace.Interiors:FindFirstChild("Nursery")
+    if Nursery then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.Nursery.WorldPivot.Position + Vector3.new(0, 0, -10))
+    end
+end
+
+--------------- Main Tasks ---------------
+local player = game.Players.LocalPlayer
+local taskNames = {
+    "hungry",
+    "thirsty",
+    "sleepy",
+    "bored",
+    "dirty",
+    "camping",
+    "sick",
+    "school",
+    "pool_party",
+    "salon",
+    "pizza_party"
+}
+
+local ailmentMonitor = player.PlayerGui.AilmentsMonitorApp.Ailments
+
+--------------------- ===========================
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Roleck11/TaskScripts/main/LibSource')))()
+
+local Window = OrionLib:MakeWindow({
+    Name = Player.Name .. " - RoloxBot",
+    HidePremium = false, 
+    SaveConfig = false, 
+    ConfigFolder = "RoloxBotConfig",
+    IntroEnabled = false,
+    IntroText = "RoloxBot - Adopt Me",
+    IntroIcon = "rbxassetid://887521804",
+    Icon = "rbxassetid://887521804",
+})
+
+local MainTab = Window:MakeTab({
+	Name = "Main",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+MainTab:AddButton({
+	Name = "Check Age Potions",
+	Callback = function()
+        PotionTable = {}
+        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
+            if v.id == "pet_age_potion" then        
+                table.insert(PotionTable, i)
+            end
+        end
+        if PotionTable == nil then
+            PotionsCheckCounter = 0
+        else
+            PotionsCheckCounter = #PotionTable
+        end
+
+        OrionLib:MakeNotification({
+            Name = "Aging Potions :",
+            Content = "Number of Potions : " .. tostring(PotionsCheckCounter),
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+  	end    
+})
+------------------------------ ========================
+_G.CountBatch = 0
+
+while true do
+    wait(1)  -- Adjust the interval as needed
+    local SuccessFUL, ErrorMsg = pcall(function()
+        for _, taskName in pairs(taskNames) do
+            if ailmentMonitor:FindFirstChild(taskName) then
+                -- Execute corresponding code based on the task name
+                local success, errorMessage = pcall(function()
+                    if taskName == "hungry" then
+                        print("Hungry task appeared.")
+                        HungryTask()
+                    elseif taskName == "thirsty" then
+                        print("Thirsty task appeared.")
+                        ThirstyTask()
+                    elseif taskName == "sleepy" then
+                        print("Sleepy task appeared.")
+                        SleepyTask()
+                    elseif taskName == "bored" then
+                        print("Bored task appeared.")
+                        BoredTask()
+                    elseif taskName == "dirty" then
+                        print("Dirty task appeared.")
+                        DirtyTask()
+                    elseif taskName == "camping" then
+                        print("Camping task appeared.")
+                        CampingTask()
+                    elseif taskName == "sick" then
+                        print("Sick task appeared.")
+                        SickTask()
+                    elseif taskName == "school" then
+                        print("School task appeared.")
+                        SchoolTask()
+                    elseif taskName == "pool_party" then
+                        print("Pool party task appeared.")
+                        PoolPartyTask()
+                    elseif taskName == "salon" then
+                        print("Salon task appeared.")
+                        SalonTask()
+                    elseif taskName == "pizza_party" then
+                        print("Pizza Party task appeared.")
+                        PizzaPartyTask()
+                    end
+
+                    -- Wait until the task is removed from the Ailments Monitor or timeout after 60 seconds
+                    local timeout = 60
+                    repeat
+                        wait(1)
+                        timeout = timeout - 1
+                    until not ailmentMonitor:FindFirstChild(taskName) or timeout <= 0
+                end)
+
+                if not success then
+                    warn("An error occurred while executing the task: " .. errorMessage)
+                end
+            end
+        end
+    end)
+    if SuccessFUL then
+        print("Successfully Completed 1 Batch")
+    elseif not SuccessFUL then
+        _G.CountBatch = _G.CountBatch + 1
+        print("=========================")
+        print(ErrorMsg)
+        print("=========================")
+        print("Unsuccessful Batches =" .. _G.CountBatch)
+    end
+end
+
+
+---------
+-------------------
+-------------------------------
+------------------------------------- GUI
+
