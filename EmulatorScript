@@ -234,6 +234,17 @@ if _G.AgingPotionMode then
                 table.insert(Pets, i)
             end
         end
+
+        if #Pets == 0 then
+            Pets = {}
+            RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", "desert_2024_egg", {})
+            task.wait(1)
+            for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+                if v.id ~= "practice_dog" then    
+                    table.insert(Pets, i)
+                end
+            end
+        end            
     end
     MainPet = RoT(Pets)
 
