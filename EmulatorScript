@@ -651,37 +651,37 @@ while true do
                 local success, errorMessage = pcall(function()
                     if taskName == "hungry" then
                         print("Hungry task appeared.")
-                        HungryTask()
+                        spawn(HungryTask)
                     elseif taskName == "thirsty" then
                         print("Thirsty task appeared.")
-                        ThirstyTask()
-                    elseif taskName == "sleepy" then
-                        print("Sleepy task appeared.")
-                        SleepyTask()
+                        spawn(ThirstyTask)
                     elseif taskName == "bored" then
                         print("Bored task appeared.")
-                        BoredTask()
-                    elseif taskName == "dirty" then
-                        print("Dirty task appeared.")
-                        DirtyTask()
+                        spawn(BoredTask)
                     elseif taskName == "camping" then
                         print("Camping task appeared.")
-                        CampingTask()
+                        spawn(CampingTask)
                     elseif taskName == "sick" then
                         print("Sick task appeared.")
-                        SickTask()
+                        spawn(SickTask)
                     elseif taskName == "school" then
                         print("School task appeared.")
-                        SchoolTask()
+                        spawn(SchoolTask)
                     elseif taskName == "pool_party" then
                         print("Pool party task appeared.")
-                        PoolPartyTask()
+                        spawn(PoolPartyTask)
                     elseif taskName == "salon" then
                         print("Salon task appeared.")
-                        SalonTask()
+                        spawn(SalonTask)
                     elseif taskName == "pizza_party" then
                         print("Pizza Party task appeared.")
-                        PizzaPartyTask()
+                        spawn(PizzaPartyTask)
+                    elseif taskName == "dirty" then
+                        print("Dirty task appeared.")
+                        spawn(DirtyTask)
+                    elseif taskName == "sleepy" then
+                        print("Sleepy task appeared.")
+                        spawn(SleepyTask)
                     end
 
                     -- Wait until the task is removed from the Ailments Monitor or timeout after 60 seconds
@@ -698,9 +698,7 @@ while true do
             end
         end
     end)
-    if SuccessFUL then
-        print("Successfully Completed 1 Batch")
-    elseif not SuccessFUL then
+    if not SuccessFUL then
         _G.CountBatch = _G.CountBatch + 1
         print("=========================")
         print(ErrorMsg)
@@ -714,5 +712,4 @@ end
 -------------------
 -------------------------------
 ------------------------------------- GUI
-
 
