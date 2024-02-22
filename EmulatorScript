@@ -457,7 +457,7 @@ function DirtyTask()
 
     local args = {
         [1] = game:GetService("Players").LocalPlayer,
-        [2] = Showers(),
+        [2] = pcall(Showers),
         [3] = "UseBlock",
         [4] = {
             ["cframe"] = Player.Character.HumanoidRootPart.CFrame
@@ -485,7 +485,7 @@ function SleepyTask()
 
     local args = {
         [1] = game:GetService("Players").LocalPlayer,
-        [2] = Bed(),
+        [2] = pcall(Bed),
         [3] = "UseBlock",
         [4] = {
             ["cframe"] = Player.Character.HumanoidRootPart.CFrame
