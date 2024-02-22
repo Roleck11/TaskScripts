@@ -457,7 +457,7 @@ function DirtyTask()
 
     local args = {
         [1] = game:GetService("Players").LocalPlayer,
-        [2] = pcall(Showers),
+        [2] = Showers(),
         [3] = "UseBlock",
         [4] = {
             ["cframe"] = Player.Character.HumanoidRootPart.CFrame
@@ -485,7 +485,7 @@ function SleepyTask()
 
     local args = {
         [1] = game:GetService("Players").LocalPlayer,
-        [2] = pcall(Bed),
+        [2] = Bed(),
         [3] = "UseBlock",
         [4] = {
             ["cframe"] = Player.Character.HumanoidRootPart.CFrame
@@ -678,10 +678,14 @@ while true do
                         spawn(PizzaPartyTask)
                     elseif taskName == "dirty" then
                         print("Dirty task appeared.")
-                        spawn(DirtyTask)
+                        spawn(function()
+                            pcall(DirtyTask)
+                        end)
                     elseif taskName == "sleepy" then
                         print("Sleepy task appeared.")
-                        spawn(SleepyTask)
+                        spawn(function()
+                            pcall(SleepyTask)
+                        end)
                     end
 
                     -- Wait until the task is removed from the Ailments Monitor or timeout after 60 seconds
