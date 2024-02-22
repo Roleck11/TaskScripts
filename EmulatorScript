@@ -442,7 +442,7 @@ end
 -- Dirty / Shower Task
 
 function DirtyTask()
-    GoToHome()
+    pcall(GoToHome)
     wait(2)
 
     local Showers = function(Name)
@@ -470,7 +470,7 @@ end
 -- Sleeping Task
 
 function SleepyTask()
-    GoToHome()
+    pcall(GoToHome)
     wait(2)
 
     local Bed = function(Name)
@@ -712,4 +712,3 @@ end
 -------------------
 -------------------------------
 ------------------------------------- GUI
-
