@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/SchoolScripts/main/FireSystemV2"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/SchoolScripts/main/FireSystem"))()
