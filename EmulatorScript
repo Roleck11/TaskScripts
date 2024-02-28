@@ -597,48 +597,52 @@ local taskNames = {
 local ailmentMonitor = player.PlayerGui.AilmentsMonitorApp.Ailments
 
 --------------------- ===========================
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Roleck11/TaskScripts/main/LibSource')))()
+spawn(function()
+    pcall(function()
+        local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/LibSource"))()
 
-local Window = OrionLib:MakeWindow({
-    Name = Player.Name .. " - RoloxBot",
-    HidePremium = false, 
-    SaveConfig = false, 
-    ConfigFolder = "RoloxBotConfig",
-    IntroEnabled = false,
-    IntroText = "RoloxBot - Adopt Me",
-    IntroIcon = "rbxassetid://887521804",
-    Icon = "rbxassetid://887521804",
-})
-
-local MainTab = Window:MakeTab({
-	Name = "Main",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-
-MainTab:AddButton({
-	Name = "Check Age Potions",
-	Callback = function()
-        PotionTable = {}
-        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
-            if v.id == "pet_age_potion" then        
-                table.insert(PotionTable, i)
-            end
-        end
-        if PotionTable == nil then
-            PotionsCheckCounter = 0
-        else
-            PotionsCheckCounter = #PotionTable
-        end
-
-        OrionLib:MakeNotification({
-            Name = "Aging Potions :",
-            Content = "Number of Potions : " .. tostring(PotionsCheckCounter),
-            Image = "rbxassetid://4483345998",
-            Time = 5
+        local Window = OrionLib:MakeWindow({
+            Name = game.Players.LocalPlayer.Name .. " - RoloxBot",
+            HidePremium = false, 
+            SaveConfig = false, 
+            ConfigFolder = "RoloxBotConfig",
+            IntroEnabled = false,
+            IntroText = "RoloxBot - Adopt Me",
+            IntroIcon = "rbxassetid://887521804",
+            Icon = "rbxassetid://887521804",
         })
-  	end    
-})
+
+        local MainTab = Window:MakeTab({
+            Name = "Main",
+            Icon = "rbxassetid://4483345998",
+            PremiumOnly = false
+        })
+
+        MainTab:AddButton({
+            Name = "Check Age Potions",
+            Callback = function()
+                PotionTable = {}
+                for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
+                    if v.id == "pet_age_potion" then        
+                        table.insert(PotionTable, i)
+                    end
+                end
+                if PotionTable == nil then
+                    PotionsCheckCounter = 0
+                else
+                    PotionsCheckCounter = #PotionTable
+                end
+
+                OrionLib:MakeNotification({
+                    Name = "Aging Potions :",
+                    Content = "Number of Potions : " .. tostring(PotionsCheckCounter),
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end    
+        })
+    end)
+end)
 ------------------------------ ========================
 _G.CountBatch = 0
 
