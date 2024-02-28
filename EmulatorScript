@@ -1,3 +1,4 @@
+
 if not game:IsLoaded() then
     while not game:IsLoaded() do wait(1) end
 end
@@ -655,31 +656,49 @@ while true do
                 local success, errorMessage = pcall(function()
                     if taskName == "hungry" then
                         print("Hungry task appeared.")
-                        spawn(HungryTask)
+                        spawn(function()
+                            pcall(HungryTask)
+                        end)
                     elseif taskName == "thirsty" then
                         print("Thirsty task appeared.")
-                        spawn(ThirstyTask)
+                        spawn(function()
+                            pcall(ThirstyTask)
+                        end)
                     elseif taskName == "bored" then
                         print("Bored task appeared.")
-                        spawn(BoredTask)
+                        spawn(function()
+                            pcall(BoredTask)
+                        end)
                     elseif taskName == "camping" then
                         print("Camping task appeared.")
-                        spawn(CampingTask)
+                        spawn(function()
+                            pcall(CampingTask)
+                        end)
                     elseif taskName == "sick" then
                         print("Sick task appeared.")
-                        spawn(SickTask)
+                        spawn(function()
+                            pcall(SickTask)
+                        end)
                     elseif taskName == "school" then
                         print("School task appeared.")
-                        spawn(SchoolTask)
+                        spawn(function()
+                            pcall(SchoolTask)
+                        end)
                     elseif taskName == "pool_party" then
                         print("Pool party task appeared.")
-                        spawn(PoolPartyTask)
+                        spawn(function()
+                            pcall(PoolPartyTask)
+                        end)
                     elseif taskName == "salon" then
                         print("Salon task appeared.")
-                        spawn(SalonTask)
+                        spawn(function()
+                            pcall(SalonTask)
+                        end)
                     elseif taskName == "pizza_party" then
                         print("Pizza Party task appeared.")
-                        spawn(PizzaPartyTask)
+                        spawn(function()
+                            pcall(PizzaPartyTask)
+                        end)
                     elseif taskName == "dirty" then
                         print("Dirty task appeared.")
                         spawn(function()
