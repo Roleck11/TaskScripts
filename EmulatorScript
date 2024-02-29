@@ -157,7 +157,6 @@ if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChil
 end
 ---------------------------------------------------
 local Fsys = require(game:GetService("ReplicatedStorage"):WaitForChild("Fsys")).load
-_G.PlayerNameA = game.Players.LocalPlayer.Name -------- PLAYER NAME FOR PLAYER RETURN
 
 game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0 -- Disable Walkspeed
 
@@ -394,11 +393,6 @@ for i, v in pairs(getgc()) do
     end
 end
 
-function PlayerReturn()
-    playerA = game.Players:WaitForChild(_G.PlayerNameA)
-    return playerA
-end
-
 local SetLocation = function(A, B, C)
     local O = get_thread_identity()
     set_thread_identity(2)
@@ -412,9 +406,8 @@ local GoToMainMap = function()
 end
 
 local GoToHome = function()
-    SetLocation("housing", "MainDoor", {["house_owner"] = PlayerReturn()})
-    task.wait(1)
-    PlayerReturn().Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -8))
+    SetLocation("housing", "MainDoor", {["house_owner"] = Player})
+    Player.Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -8))
     return false
 end
 
@@ -527,7 +520,7 @@ end
 -- School Task
 function SchoolTask()
     GoToPlace('School')
-    wait(1.5)
+    wait(1)
     School = workspace.Interiors:FindFirstChild("School")
     if School then
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.School.WorldPivot.Position + Vector3.new(0, 0, -50))
@@ -542,7 +535,7 @@ end
 -- Pizza Party Task
 function PizzaPartyTask()
     GoToPlace("PizzaShop")
-    wait(1.5)
+    wait(1)
     PizzaShop = workspace.Interiors:FindFirstChild("PizzaShop")
     if PizzaShop then
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.PizzaShop.WorldPivot.Position + Vector3.new(0, 0, -50))
@@ -552,28 +545,25 @@ end
 -- Bored / Playground Task
 function BoredTask()
     GoToMainMap()
-    wait(1.5)
     Player.Character.HumanoidRootPart.CFrame = CFrame.new(Workspace.StaticMap.Park.AilmentTarget.Position + Vector3.new(0, 5, 0))
 end
 
 -- Camping Task
 function CampingTask()
     GoToMainMap()
-    wait(1.5)
     Player.Character.HumanoidRootPart.CFrame = CFrame.new(Workspace.StaticMap.Campsite.CampsiteOrigin.Position + Vector3.new(0, 5, 0))
 end
 
 -- Pool Party Task
 function PoolPartyTask()
     GoToMainMap()
-    wait(1.5)
     Player.Character.HumanoidRootPart.CFrame = CFrame.new(Workspace.StaticMap.Pool.PoolOrigin.Position + Vector3.new(0, 5, 0))
 end
 
 -- Salon Task
 function SalonTask()
     GoToPlace("Salon")
-    wait(1.5)
+    wait(1)
     Salon = workspace.Interiors:FindFirstChild("Salon")
     if Salon then
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.Salon.WorldPivot.Position + Vector3.new(0, 0, -10))
@@ -583,7 +573,7 @@ end
 -- Adoption Party Task
 function AdoptionPartyTask()
     GoToPlace('Nursery')
-    wait(1.5)
+    wait(1)
     Nursery = workspace.Interiors:FindFirstChild("Nursery")
     if Nursery then
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.Nursery.WorldPivot.Position + Vector3.new(0, 0, -10))
@@ -670,67 +660,56 @@ while true do
                         spawn(function()
                             pcall(HungryTask)
                         end)
-                        wait(2)
                     elseif taskName == "thirsty" then
                         print("Thirsty task appeared.")
                         spawn(function()
                             pcall(ThirstyTask)
                         end)
-                        wait(2)
                     elseif taskName == "bored" then
                         print("Bored task appeared.")
                         spawn(function()
                             pcall(BoredTask)
                         end)
-                        wait(2)
                     elseif taskName == "camping" then
                         print("Camping task appeared.")
                         spawn(function()
                             pcall(CampingTask)
                         end)
-                        wait(2)
                     elseif taskName == "sick" then
                         print("Sick task appeared.")
                         spawn(function()
                             pcall(SickTask)
                         end)
-                        wait(2)
                     elseif taskName == "school" then
                         print("School task appeared.")
                         spawn(function()
                             pcall(SchoolTask)
                         end)
-                        wait(2)
                     elseif taskName == "pool_party" then
                         print("Pool party task appeared.")
                         spawn(function()
                             pcall(PoolPartyTask)
                         end)
-                        wait(2)
                     elseif taskName == "salon" then
                         print("Salon task appeared.")
                         spawn(function()
                             pcall(SalonTask)
                         end)
-                        wait(2)
                     elseif taskName == "pizza_party" then
                         print("Pizza Party task appeared.")
                         spawn(function()
                             pcall(PizzaPartyTask)
                         end)
-                        wait(2)
                     elseif taskName == "dirty" then
                         print("Dirty task appeared.")
                         spawn(function()
                             pcall(DirtyTask)
                         end)
-                        wait(2)
                     elseif taskName == "sleepy" then
                         print("Sleepy task appeared.")
                         spawn(function()
                             pcall(SleepyTask)
                         end)
-                        wait(2)
                     end
 
                     -- Wait until the task is removed from the Ailments Monitor or timeout after 60 seconds
