@@ -568,11 +568,11 @@ function CampingTask()
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
 
--- Pool Party Task
-function PoolPartyTask()
+-- Beach Party Task
+function BeachPartyTask()
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
     GoToMainMap()
-    Player.Character.HumanoidRootPart.CFrame = CFrame.new(Workspace.StaticMap.Pool.PoolOrigin.Position + Vector3.new(0, 5, 0))
+    Player.Character.HumanoidRootPart.CFrame = workspace.Interiors["MainMap/Default"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[6].CFrame
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
 
@@ -611,7 +611,7 @@ local taskNames = {
     "camping",
     "sick",
     "school",
-    "pool_party",
+    "beach_party",
     "salon",
     "pizza_party"
 }
@@ -620,49 +620,24 @@ local ailmentMonitor = player.PlayerGui.AilmentsMonitorApp.Ailments
 
 --------------------- ===========================
 spawn(function()
-    pcall(function()
-        local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/LibSource"))()
+    local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/LibSource"))()
+    local Window = OrionLib:MakeWindow({Name = game.Players.LocalPlayer.Name .. " - RoloxBot", HidePremium = false, SaveConfig = false, ConfigFolder = "RoloxBotConfig", IntroEnabled = false, Icon = "rbxassetid://887521804"})
 
-        local Window = OrionLib:MakeWindow({
-            Name = game.Players.LocalPlayer.Name .. " - RoloxBot",
-            HidePremium = false, 
-            SaveConfig = false, 
-            ConfigFolder = "RoloxBotConfig",
-            IntroEnabled = false,
-            IntroText = "RoloxBot - Adopt Me",
-            IntroIcon = "rbxassetid://887521804",
-            Icon = "rbxassetid://887521804",
-        })
+    local MainTab = Window:MakeTab({
+        Name = "Main",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+    AgingPotionLabel = MainTab:AddLabel("Aging Potion : " .. tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)()))
 
-        local MainTab = Window:MakeTab({
-            Name = "Main",
-            Icon = "rbxassetid://4483345998",
-            PremiumOnly = false
-        })
-
-        MainTab:AddButton({
-            Name = "Check Age Potions",
-            Callback = function()
-                PotionTable = {}
-                for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
-                    if v.id == "pet_age_potion" then        
-                        table.insert(PotionTable, i)
-                    end
-                end
-                if PotionTable == nil then
-                    PotionsCheckCounter = 0
-                else
-                    PotionsCheckCounter = #PotionTable
-                end
-
-                OrionLib:MakeNotification({
-                    Name = "Aging Potions :",
-                    Content = "Number of Potions : " .. tostring(PotionsCheckCounter),
-                    Image = "rbxassetid://4483345998",
-                    Time = 5
-                })
-            end    
-        })
+    game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.ChildAdded:Connect(function(child)
+        PotionTable = {}
+        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
+            if v.id == "pet_age_potion" then        
+                table.insert(PotionTable, i)
+            end
+        end
+        AgingPotionLabel:Set("Aging Potion : " .. str(#PotionTable))
     end)
 end)
 ------------------------------ ========================
@@ -705,10 +680,10 @@ while true do
                         spawn(function()
                             pcall(SchoolTask)
                         end)
-                    elseif taskName == "pool_party" then
-                        print("Pool party task appeared.")
+                    elseif taskName == "beach_party" then
+                        print("Beach party task appeared.")
                         spawn(function()
-                            pcall(PoolPartyTask)
+                            pcall(BeachPartyTask)
                         end)
                     elseif taskName == "salon" then
                         print("Salon task appeared.")
