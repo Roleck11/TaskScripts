@@ -186,6 +186,12 @@ function RoT(t)
     end
 end
 
+function EquipLastPet()
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pet)
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pet)
+end
+
+
 function GetEggAmount()
     EggsInAcc = {}
     for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
@@ -449,6 +455,7 @@ function DirtyTask()
     pcall(GoToHome)
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
     wait(2)
+    EquipLastPet()
 
     local Showers = function(Name)
         Player.Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -6)) 
@@ -480,6 +487,7 @@ function SleepyTask()
     pcall(GoToHome)
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
     wait(2)
+    EquipLastPet()
 
     local Bed = function(Name)
         Player.Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -6)) 
