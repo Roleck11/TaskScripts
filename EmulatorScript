@@ -645,7 +645,7 @@ spawn(function()
                 table.insert(PotionTable, i)
             end
         end
-        AgingPotionLabel:Set("Aging Potion : " .. str(#PotionTable))
+        AgingPotionLabel:Set("Aging Potion : " .. tostring(#PotionTable))
     end)
 end)
 ------------------------------ ========================
