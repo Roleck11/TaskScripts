@@ -179,6 +179,48 @@ print("Bucks:", Bucks)
 Pets = {}
 local Player = game:GetService("Players").LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
+inv = {}
+for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do 
+    table.insert(inv, i)
+end
+
+---------- FUNCTIONS ---------
+function CheckInv(pet)
+    for i, v in pairs(inv) do
+        if v == pet then
+            return true
+        end
+    end
+    return false
+end
+
+function findPetName(PetID)
+    for _, entry in pairs(require(game:GetService("ReplicatedStorage").ClientDB.Inventory.InventoryDB).pets) do
+        if type(entry) == "table" and string.lower(entry.id) == string.lower(PetID) then
+            return entry.name
+        end
+    end
+    return nil
+end
+
+function RequestWebhook(Desc) 
+    local WebhookURL = "https://discord.com/api/webhooks/1216052154788220940/iFFZIe-bAKr2WZka1wPNjafon7asSFDAnX134Dr6AP_byrymostwg7xq8pzlqNp3bXB5"
+    local Request = http_request or request or HttpPost or syn.request
+    local Data = {
+        ["content"] = "",
+        ["embeds"] = {
+            {
+                ["title"] = game.Players.LocalPlayer.Name,
+                ["description"] = ("Pet Hatched: __**" ..Desc.. "**__"),
+                ["color"] = tonumber(0x7269da),
+            }
+        }
+    }
+    local HeadersVar = {
+        ["content-type"] = "application/json"
+    }  
+   Request({Url = WebhookURL, Body = game:GetService("HttpService"):JSONEncode(Data), Method = "POST", Headers = HeadersVar})
+end
 
 function RoT(t)
     for i, v in pairs(t) do
@@ -318,7 +360,71 @@ if _G.EggHatchMode then
     end)
 end
 
+------------- Launch Auto-Equip if Detect New Pet in INV --------
+task.spawn(function()
+    while task.wait(1) do 
+        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            if not CheckInv(i) then 
+                table.insert(inv, i)
+                if _G.AgingPotionMode then
+                    EquipMainPet()
+                end
+                RequestWebhook(findPetName(v.id))  --- Webhook              
+            end 
+        end
+    end
+end)
+---------------------- Lure System ------------------
+print("==== Lure System Activated ====")
 
+_G.BaitID = "lures_2023_campfire_cookies"
+for i, v in pairs(game.Workspace.HouseInteriors.furniture:GetDescendants()) do
+    if v.Name:match("NormalLure") then
+        str = v.Parent.Name
+        _G.fNumber = str:gsub((game.Players.LocalPlayer.Name .. "/1/nil/true/"), "");
+    end
+end
+function LureFeedBeta()
+    for i, v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
+        if v.id == _G.BaitID then
+            cookieid = v.unique
+        end
+    end
+    local args = {
+        [1] = game.Players.LocalPlayer,
+        [2] = _G.fNumber,
+        [3] = "UseBlock",
+        [4] = {
+            ["bait_unique"] = tostring(cookieid)
+        },
+        [5] = workspace:WaitForChild(game.Players.LocalPlayer.Name) 
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+end
+
+function ClaimLureBeta()
+    local args = {
+        [1] = game:GetService("Players").LocalPlayer,
+        [2] = _G.fNumber,
+        [3] = "UseBlock",
+        [4] = true,
+        [5] = workspace:WaitForChild(game.Players.LocalPlayer.Name) 
+    }
+    function abc()
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+    end
+    success, errorA = pcall(abc)
+    if success == false then
+        LureFeedBeta()
+    end
+end
+
+spawn(function()
+    while true do
+        pcall(ClaimLureBeta)
+        wait(1)
+    end
+end)
 ---------------------- MAIN TASKS --------------------
 
 function GetFurniture(name)
@@ -649,8 +755,6 @@ spawn(function()
     end)
 end)
 ------------------------------ ========================
-_G.CountBatch = 0
-
 while true do
     wait(1)  -- Adjust the interval as needed
     local SuccessFUL, ErrorMsg = pcall(function()
@@ -729,13 +833,6 @@ while true do
             end
         end
     end)
-    if not SuccessFUL then
-        _G.CountBatch = _G.CountBatch + 1
-        print("=========================")
-        print(ErrorMsg)
-        print("=========================")
-        print("Unsuccessful Batches =" .. _G.CountBatch)
-    end
 end
 
 
