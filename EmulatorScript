@@ -513,7 +513,7 @@ local SetLocation = function(A, B, C)
 end
 
 local GoToMainMap = function()
-    SetLocation("MainMap", "Neighborhood/MainDoor")
+    SetLocation("MainMap", "MainDoor")
     return false
 end
 
@@ -686,7 +686,7 @@ end
 function BeachPartyTask()
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
     GoToMainMap()
-    Player.Character.HumanoidRootPart.CFrame = workspace.Interiors["MainMap/Default"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[6].CFrame
+    Player.Character.HumanoidRootPart.CFrame = workspace.Interiors["MainMap/Desert"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[6].CFrame
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
 
