@@ -1,5 +1,1 @@
-_G.AgingPotionMode = true
-_G.EggHatchMode = false
-EggName = "desert_2024_egg"
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/EmulatorScript"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/RoloxBotV2"))()
