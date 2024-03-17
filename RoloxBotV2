@@ -28,6 +28,11 @@ for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").
     v.Name = i
 end
 
+local RS = game:GetService("ReplicatedStorage")
+local Fsys = require(RS:WaitForChild("Fsys")).load
+local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
+local Player = game:GetService("Players").LocalPlayer
+
 ---------------- Warn Control ---------------------------------
 local old;old = hookfunction(warn,function(data)
     if data == "Tested pet entity pathfinding for a path that is too far away from its target!" then 
@@ -57,6 +62,19 @@ function clickUiButton(button, state)
     local buttonPosX = button.AbsolutePosition.X + button.AbsoluteSize.X / 2
     local buttonPosY = button.AbsolutePosition.Y + 66
     game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonPosX, buttonPosY, 0, state, game, 1)
+end
+
+function CheckStarterEgg()
+    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        if v.id == "starter_egg" then
+            return true
+        end
+    end
+    return false
+end
+
+if CheckStarterEgg() and require(game:GetService("ReplicatedStorage").ClientModules.Game.ColorThemeManager).get_theme_color() == "pink" then
+    game:GetService("ReplicatedStorage").API["SettingsAPI/SetSetting"]:FireServer("theme_color", "black")
 end
 
 repeat
@@ -103,6 +121,36 @@ repeat
         end
     end
 until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+
+if CheckStarterEgg() and require(game:GetService("ReplicatedStorage").ClientModules.Game.ColorThemeManager).get_theme_color() == "pink" then
+    local Tutorial_Statuses = {"Avatar Tutorial Started", "Avatar Editor Opened", "Avatar Editor Closed", "Housing Tutorial Started", "Housing Editor Opened", "House Exited", "Nursery Tutorial Started", "Nursery Entered", "Started Egg Received", "Quest Tutorial Started", "Quest App Opened", "Quest App Closed", "Tutorial Ailment Spawned"}
+    Main_Menu.run_tutorial = function() return end 
+    Main_Menu.run_housing_tutorial = function() return end 
+    Main_Menu.name_pet_mini_tutorial = function() return end
+    Main_Menu.run_avatar_tutorial = function() return end
+    Main_Menu.run_nursery_tutorial = function() return end 
+    Main_Menu.get_should_skip_tutorial = function() return true end 
+    require(game:GetService("ReplicatedStorage").SharedModules.PolicyHelper).is_external_link_allowed = function() return false end 
+    Main_Menu.has_spoken_with_sir_woofington = function() return true end 
+    Main_Menu.is_legacy_housing_tutorial_done = function() return true end 
+    RS.API:FindFirstChild("TeamAPI/ChooseTeam"):InvokeServer("Parents",true)
+    for i,v in pairs(Tutorial_Statuses) do task.wait()
+        RS.API["LegacyTutorialAPI/StashTutorialStatus"]:FireServer(v)
+        RS.API["LegacyTutorialAPI/MarkTutorialCompleted"]:FireServer()
+    end
+    RS.API["LegacyTutorialAPI/EquipTutorialEgg"]:FireServer()
+
+    for i = 1, 5 do
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):FindFirstChild("TradeAPI/BeginQuiz"):FireServer()
+        for i,v in pairs(getgc(true)) do
+            if type(v) == "table" and rawget(v,"question_index") then
+                for i,v in pairs(v.quiz) do
+                    game:GetService("ReplicatedStorage"):WaitForChild("API"):FindFirstChild("TradeAPI/AnswerQuizQuestion"):FireServer(v.answer)
+                end 
+            end 
+        end
+    end
+end
 
 task.spawn(function()
     repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -160,8 +208,10 @@ if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChil
     game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
 end
 ---------------------------------------------------
-local Fsys = require(game:GetService("ReplicatedStorage"):WaitForChild("Fsys")).load
-
+task.wait(2)
+game.ReplicatedStorage.API:FindFirstChild("TeamAPI/ChooseTeam"):InvokeServer("Babies",true)
+repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+task.wait(1)
 game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0 -- Disable Walkspeed
 
 local args = {
@@ -181,8 +231,7 @@ end
 Bucks = tonumber(require(game:service'ReplicatedStorage'.Fsys).load("ClientData").get("money"))
 print("Bucks:", Bucks)
 Pets = {}
-local Player = game:GetService("Players").LocalPlayer
-local RS = game:GetService("ReplicatedStorage")
+
 inv = {}
 for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do 
     table.insert(inv, i)
@@ -232,11 +281,30 @@ function RoT(t)
     end
 end
 
+function GetMainMap()
+    for i, v in pairs(game.Workspace.Interiors:GetChildren()) do
+        if v.Name:match("MainMap/") then
+            return v.Name
+        end
+    end
+    return "MainMap/Default"
+end
+
 function EquipLastPet()
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pet)
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pet)
 end
 
+function CheckExistwID(id)
+    for i, v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        if v.id ~= "practice_dog" then 
+            if i == id then
+                return true
+            end
+        end
+    end
+    return false
+end
 
 function GetEggAmount()
     EggsInAcc = {}
@@ -276,7 +344,7 @@ if _G.AgingPotionMode then
     end
 
     if #Pets == 0 then
-        print("0 Full Gown Pets ------ ======= -----")
+        print("------  0 Full Grown Pets  -----")
         Pets = {}
         for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
             if v.id ~= "practice_dog" then    
@@ -286,12 +354,30 @@ if _G.AgingPotionMode then
 
         if #Pets == 0 then
             Pets = {}
-            RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", "desert_2024_egg", {})
+            RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", "cracked_egg", {})
             task.wait(1)
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.id ~= "practice_dog" then    
                     table.insert(Pets, i)
                 end
+            end
+
+            if #Pets == 0 then
+                Pets = {}
+                for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+                    table.insert(Pets, i)
+                end
+                spawn(function()
+                    while true do
+                        Bucks = tonumber(require(game:service'ReplicatedStorage'.Fsys).load("ClientData").get("money"))
+                        if Bucks > 350 then
+                            RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", "cracked_egg", {})
+                            break
+                        end
+                        task.wait(5)
+                    end
+                end)
+                task.wait(2)
             end
         end            
     end
@@ -325,13 +411,45 @@ end
 
 ---- Main ----
 if _G.AgingPotionMode then
-    function EquipMainPet()
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(MainPet)
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(MainPet)
+    function EquipMainPet(id)
+        if CheckExistwID(id) then
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(id)
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(id)
+        else
+            _G.cFoundFGPet = false
+            for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+                if v.properties.age == 6 then
+                    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
+                    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
+                    PetName = Fsys("ClientData").get("pet_char_wrapper").char
+                    print("New Pet Name :", PetName)
+                    _G.cFoundFGPet = true
+                    break
+                end
+            end
+            if _G.cFoundFGPet == false then
+                for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+                    if v.id ~= "practice_dog" then
+                        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
+                        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
+                        PetName = Fsys("ClientData").get("pet_char_wrapper").char
+                        print("New Pet Name :", PetName)
+                        break
+                    end
+                end
+            end                
+        end
     end
 
-    EquipMainPet()
+    EquipMainPet(MainPet)
     wait(2)
+    if not Fsys("ClientData").get("pet_char_wrapper") then
+        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
+            break
+        end
+    end
 
     PetName = Fsys("ClientData").get("pet_char_wrapper").char
     print("== Pet Name:", PetName, "==")
@@ -339,7 +457,7 @@ if _G.AgingPotionMode then
     spawn(function()
         while true and wait(5) do
             if not game.Workspace.Pets:FindFirstChild(tostring(PetName)) then 
-                EquipMainPet()
+                EquipMainPet(MainPet)
             end
         end
     end)
@@ -518,6 +636,7 @@ local GoToMainMap = function()
 end
 
 local GoToHome = function()
+    game.ReplicatedStorage.API["HousingAPI/SubscribeToHouse"]:FireServer(game:GetService("Players").LocalPlayer)
     SetLocation("housing", "MainDoor", {["house_owner"] = Player})
     Player.Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -8))
     return false
@@ -656,7 +775,7 @@ end
 function BeachPartyTask()
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
     GoToMainMap()
-    Player.Character.HumanoidRootPart.CFrame = workspace.Interiors["MainMap/Desert"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[6].CFrame
+    Player.Character.HumanoidRootPart.CFrame = workspace.Interiors[GetMainMap()].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[6].CFrame
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
 
@@ -824,6 +943,10 @@ spawn(function()
 end)
 
 ----- Auto Pet Tasks ------
+
+-- No Baby Pickup
+game.ReplicatedStorage.API:FindFirstChild("FamilyAPI/CreateFamily"):InvokeServer()
+
 while true do
     task.wait(1)
     local SuccessFUL, ErrorMsg = pcall(function()
@@ -892,6 +1015,8 @@ while true do
                     wait(1)
                     timeout = timeout - 1
                 until not game.Players.LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild(taskName) or timeout <= 0
+                game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("char_wrapper")["char"])
+                game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("pet_char_wrapper")["char"])
             end)
 
             if not success then
@@ -904,5 +1029,4 @@ end
 
 ---------
 -------------------
--------------------------------
 ------------------------------------- GUI
