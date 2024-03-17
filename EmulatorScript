@@ -228,6 +228,15 @@ function RoT(t)
     end
 end
 
+function GetMainMap()
+    for i, v in pairs(game.Workspace.Interiors:GetChildren()) do
+        if v.Name:match("MainMap/") then
+            return v.Name
+        end
+    end
+    return "MainMap/Default"
+end
+
 function EquipLastPet()
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pet)
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pet)
@@ -686,7 +695,7 @@ end
 function BeachPartyTask()
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
     GoToMainMap()
-    Player.Character.HumanoidRootPart.CFrame = workspace.Interiors["MainMap/Desert"].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[6].CFrame
+    Player.Character.HumanoidRootPart.CFrame = workspace.Interiors[GetMainMap()].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[6].CFrame
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
 
