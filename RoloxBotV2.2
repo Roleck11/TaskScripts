@@ -219,6 +219,98 @@ require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp)
 if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
     game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
 end
+--------- Rolox OVerlay Screen
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local Frame_2 = Instance.new("Frame")
+local TextLabel = Instance.new("TextLabel")
+
+--Properties:
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Name = "RoloxBotOverlay"
+ScreenGui.Enabled = false
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderSizePixel = 0
+Frame.Position = UDim2.new(0, 0, 0, -70)
+Frame.Size = UDim2.new(1, 0, 1, 70)
+
+Frame_2.Parent = Frame
+Frame_2.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Frame_2.BackgroundTransparency = 1.000
+Frame_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame_2.BorderSizePixel = 0
+Frame_2.Position = UDim2.new(0.5, 0, 0.5, 0)
+Frame_2.Size = UDim2.new(0.75, 0, 0, 750)
+
+TextLabel.Parent = Frame_2
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Size = UDim2.new(1, 0, 1, 0)
+TextLabel.Font = Enum.Font.GothamBold
+TextLabel.Text = "Error.."
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextSize = 30.000
+TextLabel.RichText = true
+
+function disp_time(time)
+    local days = math.floor(time/86400)
+    local hours = math.floor(math.fmod(time, 86400)/3600)
+    local minutes = math.floor(math.fmod(time,3600)/60)
+    local seconds = math.floor(math.fmod(time,60))
+    return string.format("%d:%02d:%02d:%02d",days,hours,minutes,seconds)
+end
+
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Q then
+        if ScreenGui.Enabled == false then
+            ScreenGui.Enabled = true
+        else
+            ScreenGui.Enabled = false
+        end
+    end
+end)
+
+_G.Status = "Loading..."
+
+function SetStatus()
+    if not TimeA then
+        TimeA = 1
+    else
+        TimeA = TimeA + 1
+    end
+    Potions = tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
+    EventCurrency = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("AltCurrencyIndicatorApp").CurrencyIndicator.Container.Amount.Text
+    Bucks = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("BucksIndicatorApp").CurrencyIndicator.Container.Amount.Text
+
+    TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBot
+    Status: <font color="rgb(187, 166, 255)"> ]].._G.Status..[[ </font>
+    Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
+    Bucks: <font color="rgb(0, 191, 41)">]]..Bucks..[[</font>
+    Event Currency: <font color="rgb(237, 63, 14)">]]..EventCurrency..[[</font>
+    Total Time: <font color="rgb(137, 41, 255)">]]..disp_time(TimeA)..[[</font>
+
+    <font color="rgb(130, 255, 228)">Press Q to toggle</font>
+    ]]
+end
+
+SetStatus()
+ScreenGui.Enabled = true
+
+spawn(function()
+    while true do
+        SetStatus()
+        wait(1)
+    end
+end)
+
 ---------------------------------------------------
 task.wait(2)
 game.ReplicatedStorage.API:FindFirstChild("TeamAPI/ChooseTeam"):InvokeServer("Babies",true)
@@ -672,9 +764,12 @@ local GoToPlace = function(Name)
 end
 
 ---------------- Function Tasks ------------------
-
+repeat wait() until game.Players.LocalPlayer.Character
+repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
+repeat wait() until (workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model').Floors:GetChildren()[3].Position and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model').Floors:GetChildren()[3].Position).magnitude < 15)
 -- Platform Code
-local platform = Instance.new("Part");platform.Size = Vector3.new(10, 1, 10);platform.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0);platform.Anchored = true;platform.CanCollide = true;platform.BrickColor = BrickColor.new("Medium stone grey");platform.Parent = game.Workspace; platform.Name = "StandingPlatformA"
+local platform = Instance.new("Part");platform.Size = Vector3.new(10, 1, 10)
+platform.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0);platform.Anchored = true;platform.CanCollide = true;platform.BrickColor = BrickColor.new("Medium stone grey");platform.Parent = game.Workspace; platform.Name = "StandingPlatformA"
 -- game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
 
 -- Food / Hungry Task
@@ -704,7 +799,7 @@ end
 -- Dirty / Shower Task
 
 function DirtyTask()
-    EquipLastPet()
+    EquipMainPet(MainPet)
     task.wait(1)
     local args = {
         [1] = game:GetService("Players").LocalPlayer,
@@ -721,7 +816,7 @@ end
 -- Sleeping Task
 
 function SleepyTask()
-    EquipLastPet()
+    EquipMainPet(MainPet)
     task.wait(1)
     local args = {
         [1] = game:GetService("Players").LocalPlayer,
@@ -843,6 +938,13 @@ function SalonTask()
             v:Destroy()
         end
     end
+    for i, v in pairs(workspace.Interiors.Salon:GetChildren()) do
+        if v.Name == "Chassis" then
+            v:Destroy()
+        elseif v.Name == "Union" then
+            v:Destroy()
+        end
+    end
     game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
@@ -860,27 +962,9 @@ function AdoptionPartyTask()
     game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
 
---------------------- GUI ===========================
-spawn(function()
-    local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/LibSource"))()
-    local Window = OrionLib:MakeWindow({Name = game.Players.LocalPlayer.Name .. " - RoloxBot", HidePremium = false, SaveConfig = false, ConfigFolder = "RoloxBotConfig", IntroEnabled = false, Icon = "rbxassetid://887521804"})
-
-    local MainTab = Window:MakeTab({
-        Name = "Main",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    })
-    AgingPotionLabel = MainTab:AddLabel("Aging Potion : " .. tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)()))
-
-    spawn(function()
-        while true do
-            AgingPotionLabel:Set("Aging Potion : " .. tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)()))
-            wait(60)
-        end
-    end)
-end)
 
 ----------- BOOST PERFORMANCE ----------
+_G.Status = "Boosting Performance..."
 spawn(function()
     task.wait(3)
     print("-- Boost Performance Activated --")
@@ -1009,7 +1093,7 @@ spawn(function()
             workspace.Interiors["MainMap/Default"].Static.Props:Destroy()
             workspace.Interiors["MainMap/Default"].Static.Campsite:Destroy()
             workspace.Interiors["MainMap/Default"].Static.Bridges:Destroy()
-            workspace.Interiors["MainMap/Default"].Buildings:Destroy()
+            --workspace.Interiors["MainMap/Default"].Buildings:Destroy()
             workspace.Interiors["MainMap/Default"].TimePortalHub:Destroy()
             workspace.Interiors["MainMap/Default"].Static.Beach.Lighthouse:Destroy()
 
@@ -1031,7 +1115,7 @@ end)
 
 ----- Auto Baby Tasks -----
 spawn(function()
-    task.wait(5)
+    _G.Status = "Script Started..."
     while true do
         local Fsys = require(game.ReplicatedStorage:WaitForChild("Fsys")).load
         local Check = Fsys("ClientData").get_server(game:GetService("Players").LocalPlayer, "char_wrapper")
@@ -1061,56 +1145,67 @@ while true do
                 game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("pet_char_wrapper")["char"])
                 if taskName == "hungry" then
                     print("Hungry task appeared.")
+                    _G.Status = "Completing Hungry Task..."
                     spawn(function()
                         pcall(HungryTask)
                     end)
                 elseif taskName == "thirsty" then
                     print("Thirsty task appeared.")
+                    _G.Status = "Completing Thirsty Task..."
                     spawn(function()
                         pcall(ThirstyTask)
                     end)
                 elseif taskName == "bored" then
                     print("Bored task appeared.")
+                    _G.Status = "Completing Bored Task..."
                     spawn(function()
                         pcall(BoredTask)
                     end)
                 elseif taskName == "camping" then
                     print("Camping task appeared.")
+                    _G.Status = "Completing Camping Task..."
                     spawn(function()
                         pcall(CampingTask)
                     end)
                 elseif taskName == "sick" then
                     print("Sick task appeared.")
+                    _G.Status = "Completing Sick Task..."
                     spawn(function()
                         pcall(SickTask)
                     end)
                 elseif taskName == "school" then
                     print("School task appeared.")
+                    _G.Status = "Completing School Task..."
                     spawn(function()
                         pcall(SchoolTask)
                     end)
                 elseif taskName == "beach_party" then
                     print("Beach party task appeared.")
+                    _G.Status = "Completing Beach Party Task..."
                     spawn(function()
                         pcall(BeachPartyTask)
                     end)
                 elseif taskName == "salon" then
                     print("Salon task appeared.")
+                    _G.Status = "Completing Salon Task..."
                     spawn(function()
                         pcall(SalonTask)
                     end)
                 elseif taskName == "pizza_party" then
                     print("Pizza Party task appeared.")
+                    _G.Status = "Completing Pizza Party Task..."
                     spawn(function()
                         pcall(PizzaPartyTask)
                     end)
                 elseif taskName == "dirty" then
                     print("Dirty task appeared.")
+                    _G.Status = "Completing Dirty Task..."
                     spawn(function()
                         pcall(DirtyTask)
                     end)
                 elseif taskName == "sleepy" then
                     print("Sleepy task appeared.")
+                    _G.Status = "Completing Sleepy Task..."
                     spawn(function()
                         pcall(SleepyTask)
                     end)
@@ -1123,6 +1218,7 @@ while true do
                 until not game.Players.LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild(taskName) or timeout <= 0
                 game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("char_wrapper")["char"])
                 game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("pet_char_wrapper")["char"])
+                _G.Status = "Idle"
             end)
 
             if not success then
