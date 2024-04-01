@@ -279,6 +279,7 @@ game:GetService("UserInputService").InputBegan:Connect(function(input)
 end)
 
 _G.Status = "Loading..."
+StartPotions = tonumber((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
 
 function SetStatus()
     if not TimeA then
@@ -289,6 +290,12 @@ function SetStatus()
     Potions = tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
     EventCurrency = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("AltCurrencyIndicatorApp").CurrencyIndicator.Container.Amount.Text
     Bucks = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("BucksIndicatorApp").CurrencyIndicator.Container.Amount.Text
+
+    DifPotion = tonumber(Potions) - StartPotions
+
+    if DifPotion > 0 then
+        Potions = Potions .. " (+"..DifPotion..")"
+    end
 
     TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBot
     Status: <font color="rgb(187, 166, 255)"> ]].._G.Status..[[ </font>
@@ -312,10 +319,16 @@ spawn(function()
 end)
 
 ---------------------------------------------------
-task.wait(2)
-game.ReplicatedStorage.API:FindFirstChild("TeamAPI/ChooseTeam"):InvokeServer("Babies",true)
+
+if game.Players.LocalPlayer.Team.Name == "Parents" then 
+    task.wait(2)
+    game.ReplicatedStorage.API:FindFirstChild("TeamAPI/ChooseTeam"):InvokeServer("Babies",true)
+end
+
+repeat wait() until game.Players.LocalPlayer.Character
+repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
+repeat wait() until (workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model').Floors:GetChildren()[3].Position and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model').Floors:GetChildren()[3].Position).magnitude < 15)
 repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-task.wait(1)
 game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0 -- Disable Walkspeed
 
 local args = {
@@ -517,27 +530,34 @@ end
 if _G.AgingPotionMode then
     function EquipMainPet(id)
         if CheckExistwID(id) then
+            print("Pet Exists : ", id)
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(id)
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(id)
         else
             _G.cFoundFGPet = false
             for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.properties.age == 6 then
+                    print("Found FG Pet, equipping it : ", i)
                     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
                     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
+                    print("FG Pet equipped : ", i)
                     PetName = Fsys("ClientData").get("pet_char_wrapper").char
                     print("New Pet Name :", PetName)
                     _G.cFoundFGPet = true
+                    MainPet = i
                     break
                 end
             end
             if _G.cFoundFGPet == false then
                 for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                     if v.id ~= "practice_dog" then
+                        print("Found pet other than Practice Dog : ", i)
                         game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
                         game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
+                        print("Found Pet : ", i)
                         PetName = Fsys("ClientData").get("pet_char_wrapper").char
                         print("New Pet Name :", PetName)
+                        MainPet = i
                         break
                     end
                 end
@@ -694,6 +714,7 @@ end)
 
 getgenv().aPetCrib = GetFurniture("Crib") or GetFurniture("PetBed")
 getgenv().aPetShower = GetFurniture("Shower") or GetFurniture("Bath")
+getgenv().aPiano = GetFurniture("Piano")
 
 if not aPetCrib then
     buyFurniture("basiccrib")
@@ -705,6 +726,12 @@ if not aPetShower then
     buyFurniture("stylishshower")
     print("------ Notification ------ Bought Shower")
     getgenv().aPetShower = GetFurniture("Shower") or GetFurniture("Bath")
+end
+
+if not aPiano and tonumber(require(game:service'ReplicatedStorage'.Fsys).load("ClientData").get("money")) > 100 then
+    buyFurniture("piano")
+    print("------ Notification ------ Bought Piano")
+    getgenv().aPiano = GetFurniture("Piano")
 end
 
 local Player = game.Players.LocalPlayer
@@ -737,7 +764,7 @@ end
 local GoToMainMap = function()
     spawn(function()
         pcall(function()
-            SetLocation("MainMap", "Neighborhood/MainDoor")
+            require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter("MainMap", "Neighborhoodd/MainDoor", {})
         end)
     end)  
     return false
@@ -751,7 +778,7 @@ local GoToHome = function()
         end)
     end)       
     task.wait(1)
-    Player.Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -8))
+    --Player.Character.HumanoidRootPart.CFrame = Workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model'):GetModelCFrame():ToWorldSpace(CFrame.new(0, 0, -8))
     return false
 end
 
@@ -766,41 +793,41 @@ end
 ---------------- Function Tasks ------------------
 repeat wait() until game.Players.LocalPlayer.Character
 repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
-repeat wait() until (workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model').Floors:GetChildren()[3].Position and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model').Floors:GetChildren()[3].Position).magnitude < 15)
--- Platform Code
-local platform = Instance.new("Part");platform.Size = Vector3.new(10, 1, 10)
-platform.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0);platform.Anchored = true;platform.CanCollide = true;platform.BrickColor = BrickColor.new("Medium stone grey");platform.Parent = game.Workspace; platform.Name = "StandingPlatformA"
--- game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
+
+function CreateTempPart()
+    if workspace:FindFirstChild("TempPartA") then 
+        workspace.TempPartA:Destroy() 
+    end
+    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then  
+        game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = true  
+        local a = Instance.new("Part", workspace)
+        a.Size = Vector3.new(500,0,500)
+        a.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, -2, 0)
+        a.CanCollide = true 
+        a.Anchored = true 
+        a.Transparency = 1 
+        a.Name = "TempPartA"
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = a.CFrame + Vector3.new(0, 1, 0)
+        game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = false 
+    end
+end
 
 -- Food / Hungry Task
 function HungryTask()
-    local Player = game.Players.LocalPlayer
-    game.ReplicatedStorage:FindFirstChild("ShopAPI/BuyItem",true):InvokeServer('food', 'pizza', {})
-    game.ReplicatedStorage:FindFirstChild("ToolAPI/BakeItem",true):InvokeServer()
-    while Player.Character:FindFirstChild('PizzaTool') do wait() end
-    while not Player.Character:FindFirstChild('PizzaTool') do wait() end
-    local Foods = require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food or {}
-    local Pizza
-    for i,v in pairs(Foods) do
-        if v.id == 'pizza' then
-            Pizza = v.unique
-            break
-        end
+    EquipLastPet()
+    game.ReplicatedStorage.API:FindFirstChild("ShopAPI/BuyItem"):InvokeServer("food","schospital_refresh_2023_cafeteria_sandwich",{}) 
+    task.wait(.5)
+    Food = require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("equip_manager").food 
+    if Food then 
+        game.ReplicatedStorage.API:FindFirstChild("PetAPI/ConsumeFoodItem"):FireServer(Food.unique)
     end
-    if not Pizza then
-        return
-    end
-    wait(2)
-    game.ReplicatedStorage:FindFirstChild("PetObjectAPI/CreatePetObject",true):InvokeServer("__Enum_PetObjectCreatorType_2", {["unique_id"] = Pizza})
-    wait(1)
-    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Pizza)
 end
 
 -- Dirty / Shower Task
 
 function DirtyTask()
-    EquipMainPet(MainPet)
-    task.wait(1)
+    EquipLastPet()
+    task.wait(0.5)
     local args = {
         [1] = game:GetService("Players").LocalPlayer,
         [2] = aPetShower,
@@ -816,8 +843,8 @@ end
 -- Sleeping Task
 
 function SleepyTask()
-    EquipMainPet(MainPet)
-    task.wait(1)
+    EquipLastPet()
+    task.wait(0.5)
     local args = {
         [1] = game:GetService("Players").LocalPlayer,
         [2] = aPetCrib,
@@ -833,6 +860,8 @@ end
 -- Thirsty Task
 
 function ThirstyTask()
+    EquipLastPet()
+    task.wait(0.3)
     game.ReplicatedStorage:FindFirstChild("ShopAPI/BuyItem",true):InvokeServer('food', 'tea', {})
     local Foods = require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[Player.Name].inventory.food or {}
     local Tea
@@ -852,119 +881,63 @@ end
 
 -- School Task
 function SchoolTask()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    GoToPlace('School')
-    repeat wait() until workspace.Interiors:FindFirstChild("School")
-    for i, v in pairs(workspace.Interiors.School.Visual:GetChildren()) do
-        if v ~= workspace.Interiors.School.Visual:GetChildren()[118] then
-            v:Destroy()
-        end
+    CreateTempPart()
+    EquipLastPet()
+    for i=1,35 do task.wait(.35)
+        game.ReplicatedStorage.API:FindFirstChild("LocationAPI/SetLocation"):FireServer("School")
     end
-    School = workspace.Interiors:FindFirstChild("School")
-    if School then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.School.WorldPivot.Position + Vector3.new(0, 0, -50))
-    end
-    game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
 
 -- Sick / Hospital Task
 function SickTask()
+    EquipLastPet()
     game.ReplicatedStorage:FindFirstChild("MonitorAPI/HealWithDoctor",true):FireServer()
 end
 
 -- Pizza Party Task
 function PizzaPartyTask()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    GoToPlace("PizzaShop")
-    repeat wait() until workspace.Interiors:FindFirstChild("PizzaShop")
-    for i, v in pairs(workspace.Interiors.PizzaShop.Geometry:GetChildren()) do
-        if v ~= workspace.Interiors.PizzaShop.Geometry:GetChildren()[135] then
-            v:Destroy()
-        end
+    CreateTempPart()
+    EquipLastPet()
+    for i=1,35 do task.wait(.35)
+        game.ReplicatedStorage.API:FindFirstChild("LocationAPI/SetLocation"):FireServer("PizzaShop")
     end
-    wait(1)
-    PizzaShop = workspace.Interiors:FindFirstChild("PizzaShop")
-    if PizzaShop then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.PizzaShop.WorldPivot.Position + Vector3.new(0, 0, -50))
-    end
-    game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
 
 -- Bored / Playground Task
 function BoredTask()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    GoToMainMap()
-    repeat wait() until workspace.Interiors:FindFirstChild(GetMainMap())
-    Player.Character.HumanoidRootPart.CFrame = CFrame.new(Workspace.StaticMap.Park.AilmentTarget.Position + Vector3.new(0, 5, 0))
-    game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+    if aPiano then
+        game.ReplicatedStorage.API["HousingAPI/ActivateFurniture"]:InvokeServer(game.Players.LocalPlayer, aPiano, "Seat1", {['cframe'] = CFrame.new(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Head").Position)}, require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper")["char"])
+    end
 end
 
 -- Camping Task
 function CampingTask()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    GoToMainMap()
-    repeat wait() until workspace.Interiors:FindFirstChild(GetMainMap())
-    Player.Character.HumanoidRootPart.CFrame = CFrame.new(Workspace.StaticMap.Campsite.CampsiteOrigin.Position + Vector3.new(0, 5, 0))
-    game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+    -- Camping + Sleeping
+    EquipLastPet()
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(game:GetService("Players").LocalPlayer, aPetCrib, "UseBlock", {["cframe"] = CFrame.new(-27,20,-1056)}, require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper").char)
 end
 
 -- Beach Party Task
 function BeachPartyTask()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    GoToMainMap()
-    repeat wait() until workspace.Interiors:FindFirstChild(GetMainMap())
-    Player.Character.HumanoidRootPart.CFrame = workspace.Interiors[GetMainMap()].Static.Beach.BeachSetDressing.BoardWalk:GetChildren()[6].CFrame
-    game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+    workspace.StaticMap.Beach.BeachPartyAilmentTarget.CanCollide = true 
+    workspace.StaticMap.Beach.BeachPartyAilmentTarget.Transparency = 1 
+    workspace.StaticMap.Beach.BeachPartyAilmentTarget.Size = Vector3.new(1000,0,1000)
+    wait(.35)
+    EquipLastPet()
+    wait(0.3)
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(game:GetService("Players").LocalPlayer, aPetCrib, "UseBlock", {["cframe"] = workspace.StaticMap.Beach.BeachPartyAilmentTarget.CFrame + Vector3.new(0, 1, 0)}, require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper").char)
 end
 
 -- Salon Task
 function SalonTask()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    GoToPlace("Salon")
-    repeat wait() until workspace.Interiors:FindFirstChild("Salon")
-    Salon = workspace.Interiors:FindFirstChild("Salon")
-    if Salon then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.Salon.WorldPivot.Position + Vector3.new(0, 0, -10))
+    CreateTempPart()
+    EquipLastPet()
+    for i=1,35 do task.wait(.35)
+        game.ReplicatedStorage.API:FindFirstChild("LocationAPI/SetLocation"):FireServer("Salon")
     end
-    for i, v in pairs(workspace.Interiors.Salon:GetChildren()) do
-        if v:IsA("Model") then
-            v:Destroy()
-        elseif v:IsA("Part") then
-            v:Destroy()
-        end
-    end
-    for i, v in pairs(workspace.Interiors.Salon:GetChildren()) do
-        if v.Name == "Chassis" then
-            v:Destroy()
-        elseif v.Name == "Union" then
-            v:Destroy()
-        end
-    end
-    game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end
-
--- Adoption Party Task
-function AdoptionPartyTask()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    GoToPlace('Nursery')
-    repeat wait() until workspace.Interiors:FindFirstChild("Nursery")
-    Nursery = workspace.Interiors:FindFirstChild("Nursery")
-    if Nursery then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(workspace.Interiors.Nursery.WorldPivot.Position + Vector3.new(0, 0, -10))
-    end
-    game.Workspace.StandingPlatformA.Position = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").RootPart.Position + Vector3.new(0, -2, 0)
-    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
-end
-
 
 ----------- BOOST PERFORMANCE ----------
-_G.Status = "Boosting Performance..."
 spawn(function()
     task.wait(3)
     print("-- Boost Performance Activated --")
@@ -1132,17 +1105,12 @@ end)
 
 ----- Auto Pet Tasks ------
 
--- No Baby Pickup
-game.ReplicatedStorage.API:FindFirstChild("FamilyAPI/CreateFamily"):InvokeServer()
-
 while true do
     task.wait(1)
     local SuccessFUL, ErrorMsg = pcall(function()
         for _, taskName in pairs(Fsys("ClientData").get("pet_char_wrapper").ailments_monitor.ailments) do
             taskName = taskName.id
             local success, errorMessage = pcall(function()
-                game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("char_wrapper")["char"])
-                game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("pet_char_wrapper")["char"])
                 if taskName == "hungry" then
                     print("Hungry task appeared.")
                     _G.Status = "Completing Hungry Task..."
@@ -1216,6 +1184,9 @@ while true do
                     wait(1)
                     timeout = timeout - 1
                 until not game.Players.LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild(taskName) or timeout <= 0
+
+                GoToHome()
+
                 game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("char_wrapper")["char"])
                 game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("pet_char_wrapper")["char"])
                 _G.Status = "Idle"
