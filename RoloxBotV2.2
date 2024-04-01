@@ -152,14 +152,16 @@ end
 
 task.spawn(function()
     while not CheckTradeLicense() do
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):FindFirstChild("TradeAPI/BeginQuiz"):FireServer()
-        for i,v in pairs(getgc(true)) do
-            if type(v) == "table" and rawget(v,"question_index") then
-                for i,v in pairs(v.quiz) do
-                    game:GetService("ReplicatedStorage"):WaitForChild("API"):FindFirstChild("TradeAPI/AnswerQuizQuestion"):FireServer(v.answer)
+        pcall(function()
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):FindFirstChild("TradeAPI/BeginQuiz"):FireServer()
+            for i,v in pairs(getgc(true)) do
+                if type(v) == "table" and rawget(v,"question_index") then
+                    for i,v in pairs(v.quiz) do
+                        game:GetService("ReplicatedStorage"):WaitForChild("API"):FindFirstChild("TradeAPI/AnswerQuizQuestion"):FireServer(v.answer)
+                    end 
                 end 
-            end 
-        end
+            end
+        end)
         task.wait(1)
     end
 end)
