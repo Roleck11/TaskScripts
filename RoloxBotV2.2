@@ -329,7 +329,6 @@ end
 
 repeat wait() until game.Players.LocalPlayer.Character
 repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
-repeat wait() until (workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model').Floors:GetChildren()[3].Position and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - workspace.HouseInteriors.blueprint:FindFirstChildWhichIsA('Model').Floors:GetChildren()[3].Position).magnitude < 15)
 repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0 -- Disable Walkspeed
 
