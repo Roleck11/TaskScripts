@@ -816,12 +816,26 @@ end
 -- Food / Hungry Task
 function HungryTask()
     EquipLastPet()
-    game.ReplicatedStorage.API:FindFirstChild("ShopAPI/BuyItem"):InvokeServer("food","schospital_refresh_2023_cafeteria_sandwich",{}) 
-    task.wait(.5)
-    Food = require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("equip_manager").food 
-    if Food then 
-        game.ReplicatedStorage.API:FindFirstChild("PetAPI/ConsumeFoodItem"):FireServer(Food.unique)
+    local Player = game.Players.LocalPlayer
+    game.ReplicatedStorage:FindFirstChild("ShopAPI/BuyItem",true):InvokeServer('food', 'pizza', {})
+    game.ReplicatedStorage:FindFirstChild("ToolAPI/BakeItem",true):InvokeServer()
+    while Player.Character:FindFirstChild('PizzaTool') do wait() end
+    while not Player.Character:FindFirstChild('PizzaTool') do wait() end
+    local Foods = require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food or {}
+    local Pizza
+    for i,v in pairs(Foods) do
+        if v.id == 'pizza' then
+            Pizza = v.unique
+            break
+        end
     end
+    if not Pizza then
+        return
+    end
+    wait(2)
+    game.ReplicatedStorage:FindFirstChild("PetObjectAPI/CreatePetObject",true):InvokeServer("__Enum_PetObjectCreatorType_2", {["unique_id"] = Pizza})
+    wait(1)
+    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Pizza)
 end
 
 -- Dirty / Shower Task
