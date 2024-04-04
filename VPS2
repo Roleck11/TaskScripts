@@ -1,1 +1,0 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/RoloxBotV2.2"))()
