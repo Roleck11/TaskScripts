@@ -920,6 +920,7 @@ end
 
 -- Bored / Playground Task
 function BoredTask()
+    EquipLastPet()
     if aPiano then
         game.ReplicatedStorage.API["HousingAPI/ActivateFurniture"]:InvokeServer(game.Players.LocalPlayer, aPiano, "Seat1", {['cframe'] = CFrame.new(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Head").Position)}, require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper")["char"])
     end
@@ -934,13 +935,9 @@ end
 
 -- Beach Party Task
 function BeachPartyTask()
-    workspace.StaticMap.Beach.BeachPartyAilmentTarget.CanCollide = true 
-    workspace.StaticMap.Beach.BeachPartyAilmentTarget.Transparency = 1 
-    workspace.StaticMap.Beach.BeachPartyAilmentTarget.Size = Vector3.new(1000,0,1000)
-    wait(.35)
     EquipLastPet()
     wait(0.3)
-    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(game:GetService("Players").LocalPlayer, aPetCrib, "UseBlock", {["cframe"] = workspace.StaticMap.Beach.BeachPartyAilmentTarget.CFrame + Vector3.new(0, 1, 0)}, require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper").char)
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(game:GetService("Players").LocalPlayer, aPetCrib, "UseBlock", {["cframe"] = CFrame.new(-667, 22, -1421) + Vector3.new(0, 1, 0)}, require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper").char)
 end
 
 -- Salon Task
@@ -1049,6 +1046,9 @@ spawn(function()
         if workspace.HouseInteriors.furniture then
             workspace.HouseInteriors.furniture:Destroy()
         end
+        if workspace.HouseInteriors.blueprint:FindFirstChildOfClass("Model") then 
+            workspace.HouseInteriors.blueprint:FindFirstChildOfClass("Model"):Destroy()
+        end
     end)
 
     workspace.Terrain.WaterReflectance = 0
@@ -1056,13 +1056,36 @@ spawn(function()
     workspace.Terrain.WaterWaveSize = 0
     workspace.Terrain.WaterWaveSpeed = 0
 
-    workspace.StaticMap.Balloon:Destroy()
-    workspace.StaticMap.Park.Trampolines:Destroy()
-    workspace.StaticMap.Park.PlaygroundSlide:Destroy()
-    workspace.StaticMap.Park.Roundabout:Destroy()
-    workspace.StaticMap.Park.Seesaw:Destroy()
-    workspace.StaticMap.Park.SwingSets:Destroy()
-    workspace.Events:Destroy()
+    pcall(function()
+        workspace.StaticMap.Balloon:Destroy()
+    end)
+    pcall(function()
+        workspace.StaticMap.Park.Trampolines:Destroy()
+    end)
+    pcall(function()
+        workspace.StaticMap.Park.PlaygroundSlide:Destroy()
+    end)
+    pcall(function()
+        workspace.StaticMap.Park.Roundabout:Destroy()
+    end)
+    pcall(function()
+        workspace.StaticMap.Park.Seesaw:Destroy()
+    end)
+    pcall(function()
+        workspace.StaticMap.Park.SwingSets:Destroy()
+    end)
+    pcall(function()
+        workspace.Events:Destroy()
+    end)
+
+    for i,v in pairs(game.Lighting:GetChildren()) do 
+        if v:IsA("Model") then
+            v:Destroy()
+        elseif v.Name:match("Weather") then 
+            v:Destroy()
+        end 
+    end
+    game.Lighting.Brightness = 0
 
     game.Lighting.ChildAdded:Connect(function()
         for i,v in pairs(game.Lighting:GetChildren()) do 
@@ -1099,6 +1122,201 @@ spawn(function()
     end)
 end)
 
+networkSettings = settings().Network
+renderSettings = settings().Rendering
+physicsSettings = settings()['Physics']
+gameSettings = settings()["Game Options"]
+userGameSettings = UserSettings():FindService("UserGameSettings") or UserSettings():GetService("UserGameSettings")
+
+-- -- Render Settings
+renderSettings.QualityLevel = Enum.QualityLevel.Level01
+renderSettings.ShowBoundingBoxes = false
+renderSettings.RenderCSGTrianglesDebug = false
+renderSettings.MeshCacheSize = 0
+renderSettings.GraphicsMode = Enum.GraphicsMode.NoGraphics
+renderSettings.MeshCacheSize = Enum.MeshPartDetailLevel.Level01
+renderSettings.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level01
+renderSettings.EagerBulkExecution = false
+renderSettings.EnableFRM = true
+renderSettings.AutoFRMLevel = 0
+renderSettings.ExportMergeByMaterial = false
+renderSettings.ReloadAssets = false 
+renderSettings.MeshPartDetailLevel = "Level00"
+renderSettings.QualityLevel = "Level01"
+renderSettings.EditQualityLevel = "Level01"
+
+-- -- User Game Settings
+userGameSettings.SavedQualityLevel = Enum.SavedQualitySetting.QualityLevel1
+userGameSettings.HasEverUsedVR = false 
+userGameSettings.ChatVisible = false
+userGameSettings.AllTutorialsDisabled = false
+userGameSettings.Fullscreen = false
+userGameSettings.GraphicsQualityLevel = 0
+userGameSettings.SavedQualityLevel = 0 
+
+
+--Physics Settings 
+physicsSettings.AllowSleep = true 
+physicsSettings.AreAnchorsShown = false 
+physicsSettings.AreAssembliesShown = false 
+physicsSettings.AreAssemblyCentersOfMassShown = false 
+physicsSettings.AreAwakePartsHighlighted = false 
+physicsSettings.AreBodyTypesShown = false 
+physicsSettings.AreCollisionCostsShown = false 
+physicsSettings.AreConstraintForcesShownForSelectedOrHoveredInstances = false 
+physicsSettings.AreContactForcesShownForSelectedOrHoveredAssemblies = false 
+physicsSettings.AreContactIslandsShown = false 
+physicsSettings.AreContactPointsShown = false 
+physicsSettings.AreJointCoordinatesShown = false 
+physicsSettings.AreMagnitudesShownForDrawnForcesAndTorques = false 
+physicsSettings.AreMechanismsShown = false 
+physicsSettings.AreModelCoordsShown = false 
+physicsSettings.AreOwnersShown = false 
+physicsSettings.ArePartCoordsShown = false 
+physicsSettings.AreRegionsShown = false 
+physicsSettings.AreSolverIslandsShown = false 
+physicsSettings.AreTerrainReplicationRegionsShown = false 
+physicsSettings.AreTimestepsShown = false 
+physicsSettings.AreUnalignedPartsShown = false 
+physicsSettings.AreWorldCoordsShown = false 
+physicsSettings.DisableCSGv2 = true 
+physicsSettings.ForceDrawScale = 0 
+physicsSettings.IsInterpolationThrottleShown = false 
+physicsSettings.IsReceiveAgeShown = false 
+physicsSettings.IsTreeShown = false 
+physicsSettings.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
+physicsSettings.ShowDecompositionGeometry = false 
+physicsSettings.ThrottleAdjustTime = 1
+
+-- Network Settings
+networkSettings.PrintPhysicsErrors = false
+networkSettings.PrintJoinSizeBreakdown = false
+networkSettings.PrintStreamInstanceQuota = false
+networkSettings.RandomizeJoinInstanceOrder = false
+networkSettings.RenderStreamedRegions = false
+networkSettings.ShowActiveAnimationAsset = false
+
+for i,v in pairs(workspace.Interiors:GetDescendants()) do 
+    if v:IsA("MeshPart") or v:IsA("Part") or v:IsA("Model") or v:IsA("Folder") then 
+        v:Destroy()
+    end
+end
+for i,v in pairs(workspace.HouseExteriors:GetDescendants()) do 
+    if v:IsA("MeshPart") or v:IsA("Part") or v:IsA("Model") or v:IsA("Folder") then 
+        v:Destroy()
+    end
+end
+
+if workspace.HouseInteriors.blueprint:FindFirstChildOfClass("Model") then 
+    workspace.HouseInteriors.blueprint:FindFirstChildOfClass("Model"):Destroy()
+end
+
+for i,v in pairs(game:GetService("ReplicatedStorage").ClientServices:GetDescendants()) do 
+    if v:IsA("ModuleScript") and require(v) and require(v).init and v.Name ~= "DoorsClient" and v.Name ~= "ResetHandler" then 
+    require(v).init = function() return end 
+    end 
+end 
+for i,v in pairs(require(game:GetService("ReplicatedStorage").ClientModules.Core.WeatherClient.WeatherClient)) do 
+    if type(v) == "function" then 
+    v = function() return end 
+    end
+end   
+for i,v in pairs(game:GetService("ReplicatedStorage").ClientModules.Game.PetEntities.PetPerformancesFolder.Emotes:GetChildren()) do 
+    if v:IsA("ModuleScript") then 
+        require(v).step = function() return end 
+    end
+end    
+for i,v in pairs(game:GetService("ReplicatedStorage").ClientModules.Game.PetEntities.PetReactions:GetChildren()) do 
+    require(v).init_reaction = function() return end 
+end  
+for i,v in pairs(game:GetService("ReplicatedStorage").ClientModules.Game.PetEntities.PetPerformancesFolder.Transitions:GetChildren()) do 
+    if v:IsA("ModuleScript") then 
+        require(v).step = function() return end 
+    end
+end   
+for Data,Effect in pairs(require(game:GetService("ReplicatedStorage").ClientModules.Core.UIManager.Apps.SpecialEffectsApp)) do 
+    if type(Data) == "function" then 
+        Data = function() return end 
+    end
+end
+
+for i,v in pairs(workspace.StaticMap:GetChildren()) do 
+    if v.Name ~= "Park" and v.Name ~= "Campsite" and v.Name ~= "Pool" and v.Name ~= "TeleportLocations" then 
+        v:Destroy()
+    elseif v.Name == "Park" then 
+        for i,v in pairs(v:GetChildren()) do 
+            if v.Name ~= "BoredAilmentTarget" then 
+                v:Destroy()
+            end
+        end
+    elseif v.Name == "Campsite" then 
+        for i,v in pairs(v:GetChildren()) do 
+            if v.Name ~= "CampsiteOrigin" then 
+                v:Destroy()
+            elseif v.Name == "CampsiteOrigin" then 
+                v.Transparency = 1 
+            end
+        end
+    end
+end
+
+
+spawn(function()
+    while true do task.wait(0.5)
+        pcall(function()
+            for i,v in pairs(workspace.Pets:GetChildren()) do 
+                if require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper") and require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper")["char"] and require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper")["char"] ~= nil and v and v ~= require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrapper")["char"] then 
+                    v:Destroy()
+                end
+            end
+        end)
+        pcall(function()
+            for i,v in pairs(game.Players:GetChildren()) do 
+                if v~= game.Players.LocalPlayer then 
+                v:Destroy()
+                end 
+            end
+        end)
+        pcall(function()
+            for i,v in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do 
+                if v.Name ~= "BackpackApp" and v.Name ~= "AltCurrencyIndicatorApp" and v.Name ~= "AilmentsMonitorApp" and v.Name ~= "BucksIndicatorApp" and v.Name ~= "ToolApp" and v.Name ~= "TransitionsApp" and v.Name ~= "ScrollingBannerApp" then
+                    v:Destroy()
+                end 
+            end
+        end)
+        pcall(function()
+            Fsys("ClientData").get("pet_char_wrapper")["char"].PetModel.AnimationController:Destroy()
+        end)
+    end
+end)
+
+---------- Request Sending ----------
+spawn(function()
+    pcall(function()
+        function formatNumberWithCommas(number)
+            return tostring(number):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+        end
+        
+        while true do
+            request(
+                {
+                    Url = "http://192.168.0.49:5000/req",
+                    Method = "POST",
+                    Headers = {
+                        ["Content-Type"] = "application/json"
+                    },
+                    Body = game:GetService("HttpService"):JSONEncode({
+                        Username = game.Players.LocalPlayer.Name,
+                        Potions = tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)()),
+                        Bucks = formatNumberWithCommas(tonumber(require(game:service'ReplicatedStorage'.Fsys).load("ClientData").get("money")))
+                    })
+                }
+            )
+            wait(60)
+        end
+    end)
+end)
+
 --------------- Main Task ---------------
 
 ----- Auto Baby Tasks -----
@@ -1119,6 +1337,8 @@ spawn(function()
 end)
 
 ----- Auto Pet Tasks ------
+
+CreateTempPart()
 
 while true do
     task.wait(1)
