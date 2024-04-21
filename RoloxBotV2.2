@@ -1290,33 +1290,6 @@ spawn(function()
     end
 end)
 
----------- Request Sending ----------
-spawn(function()
-    pcall(function()
-        function formatNumberWithCommas(number)
-            return tostring(number):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
-        end
-        
-        while true do
-            request(
-                {
-                    Url = "http://192.168.0.49:5000/req",
-                    Method = "POST",
-                    Headers = {
-                        ["Content-Type"] = "application/json"
-                    },
-                    Body = game:GetService("HttpService"):JSONEncode({
-                        Username = game.Players.LocalPlayer.Name,
-                        Potions = tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)()),
-                        Bucks = formatNumberWithCommas(tonumber(require(game:service'ReplicatedStorage'.Fsys).load("ClientData").get("money")))
-                    })
-                }
-            )
-            wait(60)
-        end
-    end)
-end)
-
 --------------- Main Task ---------------
 
 ----- Auto Baby Tasks -----
