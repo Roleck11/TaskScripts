@@ -361,10 +361,12 @@ if _G.EggHatchMode then
     print("======= Egg Hatching Started =======")
     spawn(function()
         while true and wait(5) do
-            PetEquippedWithID = Fsys("ClientData").get("pet_char_wrapper").pet_id
-            if PetEquippedWithID ~= EggName then 
-                EquipEgg()
-            end
+            pcall(function()
+                PetEquippedWithID = Fsys("ClientData").get("pet_char_wrapper").pet_id
+                if PetEquippedWithID ~= EggName then 
+                    EquipEgg()
+                end
+            end)
         end
     end)
 end
