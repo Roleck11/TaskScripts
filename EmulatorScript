@@ -319,11 +319,11 @@ elseif _G.EggHatchMode then
                 if v.id ~= "practice_dog" then    
                     table.insert(Pets, i)
                 end
-            end      
+            end   
+            _G.EggHatchMode = false
+            _G.AgingPotionMode = true     
+            MainPet = RoT(Pets)
         end
-        MainPet = RoT(Pets)
-        _G.EggHatchMode = false
-        _G.AgingPotionMode = true  
     end  
 end
 
@@ -367,6 +367,8 @@ if _G.EggHatchMode then
                     if PetEquippedWithID ~= EggName then 
                         EquipEgg()
                     end
+                else
+                    EquipEgg()
                 end
             end)
             print("pet equipped : ", (tostring(PetEquippedWithID) or "nil??"))
