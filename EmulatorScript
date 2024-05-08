@@ -361,30 +361,21 @@ if _G.EggHatchMode then
     print("======= Egg Hatching Started =======")
     spawn(function()
         while true and wait(5) do
-            pcall(function()
-                PetEquippedWithID = Fsys("ClientData").get("pet_char_wrapper").pet_id
-                if PetEquippedWithID ~= EggName then 
-                    EquipEgg()
+            a,b = pcall(function()
+                if Fsys("ClientData").get("pet_char_wrapper") and Fsys("ClientData").get("pet_char_wrapper").pet_id then
+                    PetEquippedWithID = Fsys("ClientData").get("pet_char_wrapper").pet_id
+                    if PetEquippedWithID ~= EggName then 
+                        EquipEgg()
+                    end
                 end
             end)
+            print("pet equipped : ", (tostring(PetEquippedWithID) or "nil??"))
+            print(a,b)
         end
     end)
 end
 
-------------- Launch Auto-Equip if Detect New Pet in INV --------
-task.spawn(function()
-    while task.wait(1) do 
-        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-            if not CheckInv(i) then 
-                table.insert(inv, i)
-                if _G.AgingPotionMode then
-                    EquipMainPet()
-                end
-                RequestWebhook(findPetName(v.id))  --- Webhook              
-            end 
-        end
-    end
-end)
+
 ---------------------- Lure System ------------------
 print("==== Lure System Activated ====")
 
