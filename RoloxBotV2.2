@@ -290,7 +290,7 @@ function SetStatus()
         TimeA = TimeA + 1
     end
     Potions = tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
-    EventCurrency = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("AltCurrencyIndicatorApp").CurrencyIndicator.Container.Amount.Text
+    EventCurrency = (require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name][require(game:GetService("ReplicatedStorage").SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
     Bucks = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("BucksIndicatorApp").CurrencyIndicator.Container.Amount.Text
 
     DifPotion = tonumber(Potions) - StartPotions
