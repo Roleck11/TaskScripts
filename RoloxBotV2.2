@@ -142,7 +142,11 @@ if CheckStarterEgg() and require(game:GetService("ReplicatedStorage").ClientModu
     require(game:GetService("ReplicatedStorage").SharedModules.PolicyHelper).is_external_link_allowed = function() return false end 
     Main_Menu.has_spoken_with_sir_woofington = function() return true end 
     Main_Menu.is_legacy_housing_tutorial_done = function() return true end 
-    RS.API:FindFirstChild("TeamAPI/ChooseTeam"):InvokeServer("Parents",true)
+    local args = {
+        [1] = "Parents",
+        [2] = {["dont_send_back_home"] = true}
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TeamAPI/ChooseTeam"):InvokeServer(unpack(args))
     for i,v in pairs(Tutorial_Statuses) do task.wait()
         RS.API["LegacyTutorialAPI/StashTutorialStatus"]:FireServer(v)
         RS.API["LegacyTutorialAPI/MarkTutorialCompleted"]:FireServer()
@@ -324,7 +328,11 @@ end)
 
 if game.Players.LocalPlayer.Team.Name == "Parents" then 
     task.wait(2)
-    game.ReplicatedStorage.API:FindFirstChild("TeamAPI/ChooseTeam"):InvokeServer("Babies",true)
+    local args = {
+        [1] = "Babies",
+        [2] = {["dont_send_back_home"] = true}
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TeamAPI/ChooseTeam"):InvokeServer(unpack(args))
 end
 
 repeat wait() until game.Players.LocalPlayer.Character
