@@ -584,6 +584,8 @@ if _G.AgingPotionMode then
         end
     end
 
+    repeat task.wait(1) until Fsys("ClientData").get("pet_char_wrapper") and Fsys("ClientData").get("pet_char_wrapper").char
+
     PetName = Fsys("ClientData").get("pet_char_wrapper").char
     print("== Pet Name:", PetName, "==")
 
