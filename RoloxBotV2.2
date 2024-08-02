@@ -830,7 +830,7 @@ function HungryTask()
     wait(2)
     game.ReplicatedStorage:FindFirstChild("PetObjectAPI/CreatePetObject",true):InvokeServer("__Enum_PetObjectCreatorType_2", {["unique_id"] = Pizza})
     wait(1)
-    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Pizza)
+    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Pizza, require(game:GetService("ReplicatedStorage").Fsys).load("ClientData").get("pet_char_wrappers")[1]["pet_unique"])
 end
 
 -- Dirty / Shower Task
@@ -886,7 +886,7 @@ function ThirstyTask()
     end
     wait(2)
     game.ReplicatedStorage:FindFirstChild("PetObjectAPI/CreatePetObject",true):InvokeServer("__Enum_PetObjectCreatorType_2", {["unique_id"] = Tea})
-    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Tea)
+    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Tea, require(game:GetService("ReplicatedStorage").Fsys).load("ClientData").get("pet_char_wrappers")[1]["pet_unique"])
 end
 
 -- School Task
