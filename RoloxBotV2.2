@@ -1286,6 +1286,18 @@ end)
 
 --------------- Main Task ---------------
 
+-- Battlepass Claims
+task.spawn(function()
+    while task.wait(1) do
+        for i = 1, 20 do
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("BattlePassAPI/ClaimReward"):InvokeServer("celestial_2024_pass_1", i)
+            task.wait(1)
+        end
+        task.wait(30)
+    end
+end)
+
+
 ----- Auto Baby Tasks -----
 spawn(function()
     _G.Status = "Script Started..."
