@@ -1,4 +1,6 @@
-
+_G.AgingPotionMode = false
+_G.EggHatchMode = true
+getgenv().EggName = "garden_2024_egg"
 
 if not game:IsLoaded() then
     while not game:IsLoaded() do wait(1) end
@@ -256,6 +258,7 @@ end
 function GetEgg()
     print("Get Egg Function Called")
     if GetEggAmount() == 0 then
+        print("Buying Egg")
         RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", EggName, {})
         for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
             if v.id == EggName then        
@@ -263,6 +266,7 @@ function GetEgg()
             end
         end
     elseif GetEggAmount() > 0 then
+        print("Have Egg")
         for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
             if v.id == EggName then        
                 return i
@@ -337,7 +341,7 @@ if _G.AgingPotionMode then
     EquipMainPet()
     wait(2)
 
-    PetName = Fsys("ClientData").get("pet_char_wrapper").char
+    PetName = Fsys("ClientData").get("pet_char_wrappers")[1].char
     print("======= Pet Name: ", PetName, "=======")
 
     spawn(function()
@@ -351,8 +355,10 @@ end
 
 if _G.EggHatchMode then
     function EquipEgg()
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(GetEgg())
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(GetEgg())
+        EggNameA = GetEgg()
+        print("EggNameA:", EggNameA)
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(EggNameA)
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(EggNameA)
     end
 
     EquipEgg()
@@ -362,9 +368,10 @@ if _G.EggHatchMode then
     spawn(function()
         while true and wait(5) do
             a,b = pcall(function()
-                if Fsys("ClientData").get("pet_char_wrapper") and Fsys("ClientData").get("pet_char_wrapper").pet_id then
-                    PetEquippedWithID = Fsys("ClientData").get("pet_char_wrapper").pet_id
+                if Fsys("ClientData").get("pet_char_wrappers") and Fsys("ClientData").get("pet_char_wrappers")[1].pet_id then
+                    PetEquippedWithID = Fsys("ClientData").get("pet_char_wrappers")[1].pet_id
                     if PetEquippedWithID ~= EggName then 
+                        print("Current Pet Equipped is not EGG", PetEquippedWithID, EggName)
                         EquipEgg()
                     end
                 else
@@ -552,9 +559,7 @@ function HungryTask()
         return
     end
     wait(2)
-    game.ReplicatedStorage:FindFirstChild("PetObjectAPI/CreatePetObject",true):InvokeServer("__Enum_PetObjectCreatorType_2", {["unique_id"] = Pizza})
-    wait(1)
-    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Pizza)
+    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Pizza, require(game:GetService("ReplicatedStorage").Fsys).load("ClientData").get("pet_char_wrappers")[1]["pet_unique"])
 end
 
 -- Dirty / Shower Task
@@ -584,7 +589,7 @@ function DirtyTask()
         [4] = {
             ["cframe"] = Player.Character.HumanoidRootPart.CFrame
         },
-        [5] = Fsys("ClientData").get("pet_char_wrapper").char
+        [5] = Fsys("ClientData").get("pet_char_wrappers")[1].char
     }
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
 end
@@ -616,7 +621,7 @@ function SleepyTask()
         [4] = {
             ["cframe"] = Player.Character.HumanoidRootPart.CFrame
         },
-        [5] = Fsys("ClientData").get("pet_char_wrapper").char
+        [5] = Fsys("ClientData").get("pet_char_wrappers")[1].char
     }
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
 end
@@ -637,8 +642,7 @@ function ThirstyTask()
         return
     end
     wait(2)
-    game.ReplicatedStorage:FindFirstChild("PetObjectAPI/CreatePetObject",true):InvokeServer("__Enum_PetObjectCreatorType_2", {["unique_id"] = Tea})
-    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Tea)
+    game.ReplicatedStorage:FindFirstChild("PetAPI/ConsumeFoodItem",true):FireServer(Tea, require(game:GetService("ReplicatedStorage").Fsys).load("ClientData").get("pet_char_wrappers")[1]["pet_unique"])
 end
 
 -- School Task
