@@ -1286,6 +1286,87 @@ end)
 
 --------------- Main Task ---------------
 
+-- Database Tracker
+spawn(function()   
+    local function getInventoryInfo(tab)
+        local petsTable = {}
+        local allInventory = {}
+
+        for _, v in pairs(require(game.ReplicatedStorage:WaitForChild("Fsys", 600)).load("ClientData").get_data()[game.Players.LocalPlayer.Name].inventory[tab]) do
+            if v.id == "practice_dog" then continue end
+            local isNeon = v.properties and v.properties.neon
+            local isMega = v.properties and v.properties.mega_neon
+            local petKey = isNeon and ("neon_" .. v.id) or isMega and ("mega_" .. v.id) or v.id
+            print(petKey)
+            petsTable[petKey] = (petsTable[petKey] or 0) + 1
+        end
+
+        for petKey, count in pairs(petsTable) do
+            local isNeon = petKey:sub(1,5) == "neon_"
+            local isMega = petKey:sub(1,5) == "mega_"
+            local petId = isNeon and petKey:sub(6) or isMega and petKey:sub(6) or petKey
+            local petInfo = nil
+    
+            for _, petData in pairs(require(game.ReplicatedStorage:WaitForChild("Fsys", 600)).load("InventoryDB")["pets"]) do
+                if petId == tostring(petData.id) then
+                    petInfo = petData
+                    break
+                end
+            end
+    
+            if petInfo then
+                local petName = isNeon and ("Neon " .. petInfo.name) or isMega and ("Mega " .. petInfo.name) or petInfo.name
+                table.insert(allInventory, (count .. "x " .. petName))
+            end
+        end
+        return allInventory
+    end
+
+    local headers = {
+        ["Content-Type"] = "application/json",
+        ["Access-Control-Request-Headers"] = "*",
+        ["api-key"] = "Gu2DvaZp4Fg1OU3NeyIx8AiUoVv1eiMTSEJh1u47G7UpD93RTlagBUrnks5VZAYm",
+    }
+    
+    local body = {
+        ["dataSource"] = "Cluster0",
+        ["database"] = "test",
+        ["collection"] = "idk",
+        ["filter"] = {},
+        ["update"] = {
+            ["$set"] = {
+                ["stats"] = {}
+            }
+        },
+        ["upsert"] = true
+    }
+
+    lower_user = game.Players.LocalPlayer.Name:lower()
+    if lower_user:match("monsterocean") or lower_user:match("beastocean") or lower_user:match("alienocean") or lower_user:match("jumboocean") or lower_user:match("farmergrindam") then
+        passA = true
+    else
+        passA = false
+    end
+
+    while passA and task.wait() do
+        pcall(function()
+            body["filter"]["username"] = game.Players.LocalPlayer.Name
+            body["update"]["$set"]["stats"]["aging_potion"] = tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
+            body["update"]["$set"]["stats"]["bucks"] = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("BucksIndicatorApp").CurrencyIndicator.Container.Amount.Text
+            body["update"]["$set"]["stats"]["event_currency"] = (require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name][require(game:GetService("ReplicatedStorage").SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
+            body["update"]["$set"]["stats"]["pets"] = getInventoryInfo("pets")
+
+            request({
+                Url = "https://us-east-2.aws.data.mongodb-api.com/app/data-ljriije/endpoint/data/v1/action/updateOne",
+                Method = "POST",
+                Headers = headers,
+                Body = game:GetService("HttpService"):JSONEncode(body)
+            })
+        end)
+        task.wait(600)
+    end
+end)
+
 -- Battlepass Claims
 task.spawn(function()
     while task.wait(1) do
