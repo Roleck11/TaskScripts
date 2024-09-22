@@ -326,15 +326,12 @@ end)
 
 ---------------------------------------------------
 repeat task.wait() until game.Players.LocalPlayer
-repeat task.wait() until game.Players.LocalPlayer.Team
-if game.Players.LocalPlayer.Team.Name == "Parents" then 
-    task.wait(2)
-    local args = {
-        [1] = "Babies",
-        [2] = {["dont_send_back_home"] = true}
-    }
-    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TeamAPI/ChooseTeam"):InvokeServer(unpack(args))
-end
+task.wait(2)
+local args = {
+    [1] = "Babies",
+    [2] = {["dont_send_back_home"] = true}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TeamAPI/ChooseTeam"):InvokeServer(unpack(args))
 
 repeat wait() until game.Players.LocalPlayer.Character
 repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
