@@ -1,8 +1,4 @@
-
-
-if not game:IsLoaded() then
-    while not game:IsLoaded() do wait(1) end
-end
+repeat task.wait(1) until game:IsLoaded()
 
 if not _G.AgingPotionMode and not _G.EggHatchMode then
     _G.AgingPotionMode = true
@@ -23,45 +19,30 @@ for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
   v:Disable()
 end
 
-
-for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").Fsys).load("RouterClient").init, 4)) do
-    v.Name = i
+for i, v in pairs(getupvalues(require(game.ReplicatedStorage.Fsys).load("RouterClient").init)[7]) do 
+    v.Name = i 
 end
 
 local RS = game:GetService("ReplicatedStorage")
 local Fsys = require(RS:WaitForChild("Fsys")).load
 local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
 local Player = game:GetService("Players").LocalPlayer
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
 ---------------- Warn Control ---------------------------------
 local old;old = hookfunction(warn,function(data)
-    if data == "Tested pet entity pathfinding for a path that is too far away from its target!" then 
-       return 
-   end
-   if data == "Tested pet entity pathfinding for a path that is too far away from its target!" or
-      data == "[Pathfinder] Pathfinder Failed:" or
-      data:match("AccurateTime sync inaccuracy, varianc") or
-      data == "[AvatarEditorFocusSwitcher] Player's Character is nil" or
-      data:match("[CharacterHider]") or
-      data:match("Player:Move") or
-      data:match("Notch") or data:match("NULL") then
-       return
-   end
-   return old(data)
+   return
 end)
 ---------------------------------------------------------------
 
-getgenv().firesignal = function(signal, ...)
-	local connections = getconnections(signal)
-	for _, connection in ipairs(connections) do
-		connection:Fire(...)
-	end
-end
-
-function clickUiButton(button, state)
-    local buttonPosX = button.AbsolutePosition.X + button.AbsoluteSize.X / 2
-    local buttonPosY = button.AbsolutePosition.Y + 66
-    game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonPosX, buttonPosY, 0, state, game, 1)
+function clickGuiButton(button: Instance, xOffset: number, yOffset: number)
+	local xOffset = xOffset or 60
+	local yOffset = yOffset or 60
+	task.wait()
+	VirtualInputManager:SendMouseButtonEvent(button.AbsolutePosition.X + xOffset, button.AbsolutePosition.Y + yOffset, 0, true, game, 1)
+	task.wait()
+	VirtualInputManager:SendMouseButtonEvent(button.AbsolutePosition.X + xOffset, button.AbsolutePosition.Y + yOffset, 0, false, game, 1)
+	task.wait()
 end
 
 function CheckStarterEgg()
@@ -87,35 +68,27 @@ if CheckStarterEgg() and require(game:GetService("ReplicatedStorage").ClientModu
 end
 
 repeat
-    if game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Visible then
-        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.MouseButton1Click)
-        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.MouseButton1Down)
-        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Activated)
+    if Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Visible then
+        clickGuiButton(Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton)
     end
-    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.Visible then
-        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Click)
-        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Down)
-        firesignal(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.Activated)
+    if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.Visible then
+        clickGuiButton(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby)
     end
     task.wait(1.1)
     -- After Choose Parent
-    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
+    Player.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+    if Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
+        for i,v in pairs(Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
             if v.ClassName == "ImageButton" then 
-                clickUiButton(v,true)
-                task.wait()
-                clickUiButton(v,false)
+                clickGuiButton(v)
             end
         end
     end
-    game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("DailyLoginApp")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
+    Player.PlayerGui:WaitForChild("DailyLoginApp")
+    if Player.PlayerGui.DailyLoginApp.Enabled and Player.PlayerGui.DailyLoginApp.Frame.Visible then 
+        for i,v in pairs(Player.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
             if v.Name == "ClaimButton" then
-                clickUiButton(v,true)
-                task.wait()
-                clickUiButton(v,false)
+                clickGuiButton(v)
             end 
         end
     end
@@ -123,9 +96,7 @@ repeat
     if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
         for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
             if v.ClassName == "ImageButton" then 
-                clickUiButton(v,true)
-                task.wait()
-                clickUiButton(v,false)
+                clickGuiButton(v)
             end
         end
     end
@@ -177,9 +148,7 @@ task.spawn(function()
     if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
         for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
             if v.ClassName == "ImageButton" then 
-                clickUiButton(v,true)
-                task.wait()
-                clickUiButton(v,false)
+                clickGuiButton(v)
             end
         end
     end
@@ -188,13 +157,9 @@ task.spawn(function()
     if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
         for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
             if v.Name == "ClaimButton" then
-                clickUiButton(v,true)
-                task.wait()
-                clickUiButton(v,false)
-                wait(0.5)
-                clickUiButton(v,true)
-                task.wait()
-                clickUiButton(v,false)
+                clickGuiButton(v)
+                task.wait(0.5)
+                clickGuiButton(v)
             end 
         end
     end
@@ -203,17 +168,12 @@ task.spawn(function()
     if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
         for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
             if v.ClassName == "ImageButton" then 
-                clickUiButton(v,true)
-                task.wait()
-                clickUiButton(v,false)
+                clickGuiButton(v)
             end
         end
     end
 end)
 
-for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
-  v:Disable()
-end
 ---------- Extra GUI Control and Buttons and IMAGES blah blah -------------
 game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Enabled = false
 game:GetService("Players").LocalPlayer.PlayerGui.InteractionsApp.Enabled = false
@@ -286,7 +246,7 @@ end)
 
 _G.Status = "Loading..."
 StartPotions = tonumber((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
-
+StartBucks = Fsys("ClientData").get_data()[Player.Name].money
 function SetStatus()
     if not TimeA then
         TimeA = 1
@@ -295,13 +255,15 @@ function SetStatus()
     end
     Potions = tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
     EventCurrency = (require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name][require(game:GetService("ReplicatedStorage").SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
-    Bucks = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("BucksIndicatorApp").CurrencyIndicator.Container.Amount.Text
+    Bucks = Fsys("ClientData").get_data()[Player.Name].money
 
     DifPotion = tonumber(Potions) - StartPotions
+    DifBucks = Fsys("ClientData").get_data()[Player.Name].money - StartBucks
 
     if DifPotion > 0 then
         Potions = Potions .. " (+"..DifPotion..")"
     end
+    if DifBucks > 0 then Bucks = Bucks .. " (+"..DifBucks..")" end
 
     TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBot
     Status: <font color="rgb(187, 166, 255)"> ]].._G.Status..[[ </font>
@@ -318,9 +280,8 @@ SetStatus()
 ScreenGui.Enabled = true
 
 spawn(function()
-    while true do
+    while task.wait(1) do
         SetStatus()
-        wait(1)
     end
 end)
 
@@ -1050,6 +1011,9 @@ spawn(function()
 
     pcall(function()
         workspace.StaticMap.Balloon:Destroy()
+        if workspace:FindFirstChildWhichIsA("Terrain") then
+            workspace.Terrain:Clear()
+        end
     end)
     pcall(function()
         workspace.StaticMap.Park.Trampolines:Destroy()
@@ -1272,8 +1236,13 @@ spawn(function()
         pcall(function()
             for i,v in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do 
                 if v.Name ~= "BackpackApp" and v.Name ~= "AltCurrencyIndicatorApp" and v.Name ~= "AilmentsMonitorApp" and v.Name ~= "BucksIndicatorApp" and v.Name ~= "ToolApp" and v.Name ~= "TransitionsApp" and v.Name ~= "ScrollingBannerApp" then
-                    v:Destroy()
+                   v:Destroy()
+                else
+                    v.Parent = game.ReplicatedStorage
                 end 
+            end
+            for i,v in pairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do
+                v.Parent = game.ReplicatedStorage
             end
         end)
         pcall(function()
@@ -1317,6 +1286,15 @@ spawn(function()
 end)
 
 ----- Auto Pet Tasks ------
+
+function CheckTaskExist(taskName)
+    for i, v in pairs(Fsys("ClientData").get("pet_char_wrappers")[1].ailments_monitor.ailments) do
+        if v.id == taskName then
+            return true
+        end
+    end
+    return false
+end
 
 CreateTempPart()
 
@@ -1398,12 +1376,12 @@ while true do
                 repeat
                     wait(1)
                     timeout = timeout - 1
-                until not game.Players.LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild(taskName) or timeout <= 0
+                until not CheckTaskExist(taskName) or timeout <= 0
 
                 GoToHome()
 
-                game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("char_wrapper")["char"])
-                game:GetService("ReplicatedStorage").API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("pet_char_wrappers")[1]["char"])
+                RS.API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("char_wrapper")["char"])
+                RS.API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("pet_char_wrappers")[1]["char"])
                 _G.Status = "Idle"
             end)
 
