@@ -65,6 +65,7 @@ end
 
 if CheckStarterEgg() and require(game:GetService("ReplicatedStorage").ClientModules.Game.ColorThemeManager).get_theme_color() == "pink" then
     game:GetService("ReplicatedStorage").API["SettingsAPI/SetSetting"]:FireServer("theme_color", "black")
+    task.wait(3)
 end
 
 repeat
@@ -123,6 +124,7 @@ if CheckStarterEgg() and require(game:GetService("ReplicatedStorage").ClientModu
         RS.API["LegacyTutorialAPI/MarkTutorialCompleted"]:FireServer()
     end
     RS.API["LegacyTutorialAPI/EquipTutorialEgg"]:FireServer()
+    game:Shutdown()
 end
 
 task.spawn(function()
