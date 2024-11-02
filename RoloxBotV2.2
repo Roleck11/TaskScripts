@@ -1258,22 +1258,10 @@ end)
 -- Database Tracker
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/ServerCode/main/sendDatabaseReq"))()
 
--- Battlepass Claims
-task.spawn(function()
-    while task.wait(1) do
-        for i = 1, 20 do
-            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("BattlePassAPI/ClaimReward"):InvokeServer("celestial_2024_pass_1", i)
-            task.wait(1)
-        end
-        task.wait(30)
-    end
-end)
-
-
 ----- Auto Baby Tasks -----
 spawn(function()
     _G.Status = "Script Started..."
-    while true do
+    while task.wait(5) do
         local Fsys = require(game.ReplicatedStorage:WaitForChild("Fsys")).load
         local Check = Fsys("ClientData").get_server(game:GetService("Players").LocalPlayer, "char_wrapper")
         if Check and Check.ailments_monitor and Check.ailments_monitor.ailments then 
@@ -1283,7 +1271,18 @@ spawn(function()
                 end
             end
         end
-        task.wait(5)
+    end
+end)
+
+---- Auto Quest Claim + Auto Golden Jaguar ---
+spawn(function()
+    for i, v in pairs(require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("quest_manager")["quests_cached"]) do
+        if v["steps_completed"] >= 1 then
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("QuestAPI/ClaimQuest"):InvokeServer(v["unique_id"])
+            task.wait()
+        elseif v["entry_name"] == "ddlm_2024_stamp_collect" then
+            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("DdlmAPI/ClaimStamp"):FireServer()
+        end
     end
 end)
 
