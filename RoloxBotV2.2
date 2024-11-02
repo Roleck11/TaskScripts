@@ -1276,12 +1276,14 @@ end)
 
 ---- Auto Quest Claim + Auto Golden Jaguar ---
 spawn(function()
-    for i, v in pairs(require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("quest_manager")["quests_cached"]) do
-        if v["steps_completed"] >= 1 then
-            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("QuestAPI/ClaimQuest"):InvokeServer(v["unique_id"])
-            task.wait()
-        elseif v["entry_name"] == "ddlm_2024_stamp_collect" then
-            game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("DdlmAPI/ClaimStamp"):FireServer()
+    while task.wait(60) do
+        for i, v in pairs(require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("quest_manager")["quests_cached"]) do
+            if v["steps_completed"] >= 1 then
+                game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("QuestAPI/ClaimQuest"):InvokeServer(v["unique_id"])
+                task.wait()
+            elseif v["entry_name"] == "ddlm_2024_stamp_collect" then
+                game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("DdlmAPI/ClaimStamp"):FireServer()
+            end
         end
     end
 end)
