@@ -22,7 +22,7 @@ for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
 end
 
 
-for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").Fsys).load("RouterClient").init, 4)) do
+for i, v in pairs(debug.getupvalue(require(game:GetService("ReplicatedStorage").Fsys).load("RouterClient").init, 7)) do
     v.Name = i
 end
 
