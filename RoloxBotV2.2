@@ -345,7 +345,7 @@ function findPetName(PetID)
 end
 
 function RequestWebhook(Desc) 
-    local WebhookURL = "https://discord.com/api/webhooks/1216052154788220940/iFFZIe-bAKr2WZka1wPNjafon7asSFDAnX134Dr6AP_byrymostwg7xq8pzlqNp3bXB5"
+    local WebhookURL = "https://discord.com/api/webhooks/1241984230943227924/5zgCDHg05pm6n1748sFMCuvBAoelw5-HFxcKRAcFt1PUYsZEBr0GqCmjvkb4r7R_a9Li"
     local Request = http_request or request or HttpPost or syn.request
     local Data = {
         ["content"] = "",
@@ -653,7 +653,7 @@ function LureFeedBeta()
         [4] = {
             ["bait_unique"] = tostring(cookieid)
         },
-        [5] = workspace:WaitForChild(game.Players.LocalPlayer.Name) 
+        [5] = workspace:WaitForChild("PlayerCharacters"):WaitForChild(game.Players.LocalPlayer.Name) 
     }
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
 end
@@ -664,22 +664,19 @@ function ClaimLureBeta()
         [2] = _G.fNumber,
         [3] = "UseBlock",
         [4] = true,
-        [5] = workspace:WaitForChild(game.Players.LocalPlayer.Name) 
+        [5] = workspace:WaitForChild("PlayerCharacters"):WaitForChild(game.Players.LocalPlayer.Name)
     }
-    function abc()
-        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
-    end
-    success, errorA = pcall(abc)
-    if success == false then
-        LureFeedBeta()
-    end
+    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
+    LureFeedBeta()
 end
 
 spawn(function()
-    BuyLureBox()
-    while true do
+    if _G.fNumber == nil then
+        print("Buying Lure Box")
+        BuyLureBox()
+    end
+    while task.wait(15) do
         pcall(ClaimLureBeta)
-        wait(1)
     end
 end)
 
