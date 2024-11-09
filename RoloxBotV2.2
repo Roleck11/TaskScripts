@@ -298,7 +298,7 @@ local args = {
 game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TeamAPI/ChooseTeam"):InvokeServer(unpack(args))
 
 repeat wait() until game.Players.LocalPlayer.Character
-repeat wait() until game.Players.LocalPlayer.Character.HumanoidRootPart
+repeat wait() until game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 local HRP = Player.Character.HumanoidRootPart
 --game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0 -- Disable Walkspeed
@@ -1254,6 +1254,7 @@ spawn(function()
     end)
 
     workspace.Interiors.ChildAdded:Connect(function()
+        if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
         pcall(function()
             workspace.Interiors["MainMap/Default"].Static.Boundaries:Destroy()
             workspace.Interiors["MainMap/Default"].Static.Props:Destroy()
@@ -1535,16 +1536,18 @@ function CheckTaskExist(taskName)
 end
 
 function ChooseMysteryTask(mysteryID)
+    getgenv().MysteryChoosing = true
+
     local tasksList = {
-        "school",
-        "bored",
-        "pizza_party",
-        "salon",
         "thirsty",
         "dirty",
         "sleepy",
         "toilet",
         "hungry",
+        "school",
+        "bored",
+        "pizza_party",
+        "salon",
         "camping",
         "beach_party",
         "sick",
