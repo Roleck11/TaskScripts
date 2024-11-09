@@ -778,6 +778,27 @@ end
 
 ---------------- Function Tasks ------------------
 
+function hasVehicle()
+    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.transport) do
+        if v.id == "vehicle_shop_2022_bicycle" then
+            return true
+        end
+    end
+    if Fsys("ClientData").get_data()[Player.Name].money > 75 then
+        local args = {
+            [1] = "transport",
+            [2] = "vehicle_shop_2022_bicycle",
+            [3] = {
+                ["buy_count"] = 1,
+                ["chosen_rgb"] = Color3.new(0.06666667014360428, 0.06666667014360428, 0.06666667014360428)
+            }
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ShopAPI/BuyItem"):InvokeServer(unpack(args))
+        return true
+    end
+    return false
+end
 
 -- Food / Hungry Task
 function HungryTask()
@@ -1565,7 +1586,7 @@ while task.wait(1) do
                 spawn(function()
                     pcall(SickTask)
                 end)
-            elseif taskName == "ride" then
+            elseif taskName == "ride" and hasVehicle() then
                 print("Ride task appeared.")
                 _G.Status = "Completing Ride Task..."
                 spawn(function()
