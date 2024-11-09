@@ -966,11 +966,9 @@ end
 -- Camping Task
 function CampingTask()
     -- Camping + Sleeping
-    if not GetMainMap() then
-        print("Tping to Main Map")
-        GoToMainMap()
-        repeat task.wait(1) until GetMainMap()
-    end
+    print("Tping to Main Map")
+    GoToMainMap()
+    repeat task.wait(1) until GetMainMap()
     
     task.wait(10)
     print("Tping to Camping")
@@ -983,11 +981,9 @@ end
 
 -- Beach Party Task
 function BeachPartyTask()
-    if not GetMainMap() then
-        print("Tping to Main Map")
-        GoToMainMap()
-        repeat task.wait(1) until GetMainMap()
-    end
+    print("Tping to Main Map")
+    GoToMainMap()
+    repeat task.wait(1) until GetMainMap()
     
     task.wait(10)
     print("Tping to Beach")
