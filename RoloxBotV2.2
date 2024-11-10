@@ -300,7 +300,7 @@ local args = {
 game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TeamAPI/ChooseTeam"):InvokeServer(unpack(args))
 
 repeat wait() until game.Players.LocalPlayer.Character
-repeat wait() until game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+repeat wait() until game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 repeat wait() until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 local HRP = Player.Character.HumanoidRootPart
 --game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0 -- Disable Walkspeed
