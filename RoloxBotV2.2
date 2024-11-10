@@ -269,7 +269,7 @@ function SetStatus()
     end
     if DifBucks > 0 then Bucks = Bucks .. " (+"..DifBucks..")" end
 
-    TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBotV3.2 - Fixed Walk
+    TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBotV3.21
     Status: <font color="rgb(187, 166, 255)"> ]].._G.Status..[[ </font>
     Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
     Bucks: <font color="rgb(0, 191, 41)">]]..Bucks..[[</font>
@@ -787,7 +787,7 @@ local GoToMainMap = function()
     --spawn(function()
         --require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter("MainMap", "Neighborhoodd/MainDoor", {})
         game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = true
-        SetLocation("MainMap", "Neighborhood/MainDoor", {["spawn_cframe"] = CFrame.new(-248.025375, 1, -1746.41724, -0.998434782, -7.92188573e-08, -0.0559278913, -7.50130056e-08, 1, -7.73006334e-08, 0.0559278913, -7.29843208e-08, -0.998434782)})
+        SetLocation("MainMap", "Neighborhood/MainDoor", {["spawn_cframe"] = CFrame.new(-248.025375, -50, -1746.41724, -0.998434782, -7.92188573e-08, -0.0559278913, -7.50130056e-08, 1, -7.73006334e-08, 0.0559278913, -7.29843208e-08, -0.998434782)})
         if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
         repeat task.wait() until IsInMainMap()
         CreateTempPart()
@@ -990,7 +990,8 @@ function CampingTask()
     
     task.wait(10)
     print("Tping to Camping")
-    HRP.CFrame = CFrame.new(-27,25,-1056) -- set 25
+    HRP.CFrame = CFrame.new(-27,0,-1056) -- set 25
+    game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
     CreateTempPart()
     EquipLastPet()
     
@@ -1005,7 +1006,8 @@ function BeachPartyTask()
     
     task.wait(10)
     print("Tping to Beach")
-    HRP.CFrame = CFrame.new(-667, 25, -1421) -- set 25
+    HRP.CFrame = CFrame.new(-667, -5, -1421) -- set 25
+    game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
     CreateTempPart()
     EquipLastPet()
     --[[
@@ -1042,14 +1044,17 @@ end
 function RideTask()
     GoToMainMap()
     CreateTempPart()
+    task.wait(5)
     EquipLastPet()
-    task.wait(7)
+    task.wait(2)
+
     bikeId = EquipBike()
 
     if bikeId then
         task.wait(1)
         oldCFrame = HRP.CFrame + Vector3.new(0, 7, 0)
         HRP.CFrame = oldCFrame
+        game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
 
         task.wait(1)
         game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.W, false, game)
@@ -1076,11 +1081,13 @@ end
 function WalkTask()
     GoToMainMap()
     CreateTempPart()
+    task.wait(5)
     EquipLastPet()
-    task.wait(8)
+    task.wait(2)
 
     oldCFrame = HRP.CFrame + Vector3.new(0, 7, 0)
     HRP.CFrame = oldCFrame
+    game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
     --Player.Character.Humanoid:MoveTo(HRP.Position + Vector3.new(1000, 0, 0))
     repeat
         local pet = require(game.ReplicatedStorage:WaitForChild("Fsys")).load("ClientData").get("pet_char_wrappers")[1]["char"]
@@ -1611,9 +1618,25 @@ function ChooseMysteryTask(mysteryID)
     getgenv().MysteryChoosing = false
 end
 
+spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+        if HRP.CFrame.Y < -250 then
+            print("Safety Net Utilized!")
+            CreateTempPart()
+            task.wait(0.5)
+            GoToMainMap()
+            repeat task.wait(1) until HRP.CFrame > -250
+        end
+        end)
+    end
+end)
 
+print("Creating Temp Part")
 CreateTempPart()
+print("TPing to Main Map")
 GoToMainMap()
+print("TPed to Main Map - First Time")
 task.wait(2)
 
 getgenv().MysteryChoosing = false
@@ -1734,12 +1757,6 @@ while task.wait(1) do
                 until not CheckTaskExist(taskName) or timeout <= 0
             end
 
-            if not IsInMainMap() then
-                GoToMainMap()
-            else
-                HRP.CFrame = CFrame.new(-248.025375, 1, -1746.41724, -0.998434782, -7.92188573e-08, -0.0559278913, -7.50130056e-08, 1, -7.73006334e-08, 0.0559278913, -7.29843208e-08, -0.998434782)
-                CreateTempPart()
-            end
             task.wait(3)
 
             RS.API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(Fsys("ClientData").get("char_wrapper")["char"])
