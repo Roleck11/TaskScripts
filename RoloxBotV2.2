@@ -25,6 +25,7 @@ end
 
 local RS = game:GetService("ReplicatedStorage")
 local Fsys = require(RS:WaitForChild("Fsys")).load
+local ClientData = require(RS.ClientModules.Core.ClientData)
 local RouterClient = require(RS.ClientModules.Core:WaitForChild("RouterClient"):WaitForChild("RouterClient"))
 local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
 local Player = game:GetService("Players").LocalPlayer
@@ -47,7 +48,7 @@ function clickGuiButton(button: Instance, xOffset: number, yOffset: number)
 end
 
 function CheckStarterEgg()
-    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
         if v.id == "starter_egg" then
             return true
         end
@@ -56,7 +57,7 @@ function CheckStarterEgg()
 end
 
 function CheckTradeLicense()
-    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.toys) do
+    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.toys) do
         if v.id:match("license") then
             return true
         end
@@ -248,7 +249,7 @@ game:GetService("UserInputService").InputBegan:Connect(function(input)
 end)
 
 _G.Status = "Loading..."
-StartPotions = tonumber((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
+StartPotions = tonumber((function() local t={} for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
 StartBucks = Fsys("ClientData").get_data()[Player.Name].money
 function SetStatus()
     if not TimeA then
@@ -256,8 +257,8 @@ function SetStatus()
     else
         TimeA = TimeA + 1
     end
-    Potions = tostring((function() local t={} for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
-    EventCurrency = (require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name][require(game:GetService("ReplicatedStorage").SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
+    Potions = tostring((function() local t={} for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.food)do if v.id=="pet_age_potion"then table.insert(t,i)end end return #t end)())
+    EventCurrency = (ClientData.get_data()[game.Players.LocalPlayer.Name][require(game:GetService("ReplicatedStorage").SharedModules.SharedDB.AltCurrencyData)["name"]] or 0)
     Bucks = Fsys("ClientData").get_data()[Player.Name].money
 
     DifPotion = tonumber(Potions) - StartPotions
@@ -268,7 +269,7 @@ function SetStatus()
     end
     if DifBucks > 0 then Bucks = Bucks .. " (+"..DifBucks..")" end
 
-    TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBotV3.1
+    TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBotV3.2 - Fixed Walk
     Status: <font color="rgb(187, 166, 255)"> ]].._G.Status..[[ </font>
     Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
     Bucks: <font color="rgb(0, 191, 41)">]]..Bucks..[[</font>
@@ -311,7 +312,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("AvatarAPI
 
 ---------------- Equip Pet ----------------------
 
-for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
     if v.id ~= "practice_dog" then    
         game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
         break
@@ -323,7 +324,7 @@ print("Bucks:", Bucks)
 Pets = {}
 
 inv = {}
-for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do 
+for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do 
     table.insert(inv, i)
 end
 
@@ -397,14 +398,14 @@ function GetMainMap()
 end
 
 function EquipLastPet()
-    RS.API:WaitForChild("ToolAPI/Unequip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pets[1])
+    RS.API:WaitForChild("ToolAPI/Unequip"):InvokeServer(ClientData.get_data()[game.Players.LocalPlayer.Name].last_equipped_pets[1])
     task.wait(0.25)
-    RS.API:WaitForChild("ToolAPI/Equip"):InvokeServer(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].last_equipped_pets[1])
+    RS.API:WaitForChild("ToolAPI/Equip"):InvokeServer(ClientData.get_data()[game.Players.LocalPlayer.Name].last_equipped_pets[1])
     task.wait(1)
 end
 
 function CheckExistwID(id)
-    for i, v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+    for i, v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
         if v.id ~= "practice_dog" then 
             if i == id then
                 return true
@@ -416,7 +417,7 @@ end
 
 function GetEggAmount()
     EggsInAcc = {}
-    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
         if v.id == EggName then
             table.insert(EggsInAcc, i)
         end
@@ -428,13 +429,13 @@ function GetEgg()
     print("Get Egg Function Called")
     if GetEggAmount() == 0 then
         RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", EggName, {})
-        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
             if v.id == EggName then        
                 return i
             end
         end
     elseif GetEggAmount() > 0 then
-        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
             if v.id == EggName then        
                 return i
             end
@@ -445,7 +446,7 @@ end
 if _G.AgingPotionMode then
     print("== Selected Mode : Aging Potion ==")
     Pets = {}
-    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
         if v.properties.age == 6 then        
             table.insert(Pets, i)
         end
@@ -454,7 +455,7 @@ if _G.AgingPotionMode then
     if #Pets == 0 then
         print("------  0 Full Grown Pets  -----")
         Pets = {}
-        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
             if v.id ~= "practice_dog" then    
                 table.insert(Pets, i)
             end
@@ -464,7 +465,7 @@ if _G.AgingPotionMode then
             Pets = {}
             RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", "cracked_egg", {})
             task.wait(1)
-            for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.id ~= "practice_dog" then    
                     table.insert(Pets, i)
                 end
@@ -472,7 +473,7 @@ if _G.AgingPotionMode then
 
             if #Pets == 0 then
                 Pets = {}
-                for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+                for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                     table.insert(Pets, i)
                 end
                 spawn(function()
@@ -499,13 +500,13 @@ elseif _G.EggHatchMode then
         EggsInAcc = {}
         if Bucks > 750 then
             RS.API["ShopAPI/BuyItem"]:InvokeServer("pets", EggName, {})
-            for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.id == EggName then        
                     table.insert(EggsInAcc, i)
                 end
             end      
         else
-            for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.id ~= "practice_dog" then    
                     table.insert(Pets, i)
                 end
@@ -526,7 +527,7 @@ if _G.AgingPotionMode then
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(id)
         else
             _G.cFoundFGPet = false
-            for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+            for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                 if v.properties.age == 6 then
                     print("Found FG Pet, equipping it : ", i)
                     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
@@ -540,7 +541,7 @@ if _G.AgingPotionMode then
                 end
             end
             if _G.cFoundFGPet == false then
-                for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+                for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
                     if v.id ~= "practice_dog" then
                         print("Found pet other than Practice Dog : ", i)
                         game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
@@ -559,7 +560,7 @@ if _G.AgingPotionMode then
     EquipMainPet(MainPet)
     wait(2)
     if not Fsys("ClientData").get("pet_char_wrappers")[1] then
-        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
             break
@@ -609,7 +610,7 @@ end
 ------------- Launch Auto-Equip if Detect New Pet in INV --------
 task.spawn(function()
     while task.wait(1) do 
-        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
             if not CheckInv(i) then 
                 table.insert(inv, i)
                 if _G.AgingPotionMode then
@@ -667,7 +668,7 @@ end
 _G.fNumber = GetFurniture("Lures2023NormalLure")
 
 function LureFeedBeta()
-    for i, v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food) do
+    for i, v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.food) do
         if v.id == _G.BaitID then
             cookieid = v.unique
         end
@@ -785,10 +786,12 @@ end
 local GoToMainMap = function()
     --spawn(function()
         --require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter("MainMap", "Neighborhoodd/MainDoor", {})
+        game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = true
         SetLocation("MainMap", "Neighborhood/MainDoor", {["spawn_cframe"] = CFrame.new(-248.025375, 1, -1746.41724, -0.998434782, -7.92188573e-08, -0.0559278913, -7.50130056e-08, 1, -7.73006334e-08, 0.0559278913, -7.29843208e-08, -0.998434782)})
         if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
         repeat task.wait() until IsInMainMap()
         CreateTempPart()
+        game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = false
     --end)
     return false
 end
@@ -816,7 +819,7 @@ end
 ---------------- Function Tasks ------------------
 
 function hasVehicle()
-    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.transport) do
+    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.transport) do
         if v.id == "vehicle_shop_2022_bicycle" then
             return true
         end
@@ -845,7 +848,7 @@ function HungryTask()
     game.ReplicatedStorage:FindFirstChild("ToolAPI/BakeItem",true):InvokeServer()
     while Player.Character:FindFirstChild('PizzaTool') do wait() end
     while not Player.Character:FindFirstChild('PizzaTool') do wait() end
-    local Foods = require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.food or {}
+    local Foods = ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.food or {}
     local Pizza
     for i,v in pairs(Foods) do
         if v.id == 'pizza' then
@@ -917,7 +920,7 @@ function ThirstyTask()
     EquipLastPet()
     task.wait(0.3)
     game.ReplicatedStorage:FindFirstChild("ShopAPI/BuyItem",true):InvokeServer('food', 'tea', {})
-    local Foods = require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[Player.Name].inventory.food or {}
+    local Foods = ClientData.get_data()[Player.Name].inventory.food or {}
     local Tea
     for i, v in pairs(Foods) do
         if v.id == 'tea' then
@@ -1026,7 +1029,7 @@ end
 
 -- Ride Task
 function EquipBike()
-    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.transport) do
+    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.transport) do
         if v.id == "vehicle_shop_2022_bicycle" then
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
             task.wait(0.5)
@@ -1038,7 +1041,7 @@ end
 
 function RideTask()
     GoToMainMap()
-    --CreateTempPart()
+    CreateTempPart()
     EquipLastPet()
     task.wait(7)
     bikeId = EquipBike()
@@ -1085,10 +1088,15 @@ function WalkTask()
         HRP.CFrame = oldCFrame + Vector3.new(0, 100, 0)
         --HRP.CFrame = oldCFrame 
         game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
-        task.wait(1) 
+        task.wait(2)
+        CreateTempPart()
     until not CheckTaskExist("walk") or (not IsInMainMap())
     --Player.Character.Humanoid:MoveTo(HRP.Position)
     HRP.CFrame = oldCFrame
+    game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+    CreateTempPart()
+    task.wait(0.5)
+    CreateTempPart()
 end
 
 function PlayTask()
@@ -1096,7 +1104,7 @@ function PlayTask()
     task.wait(2)
     boneId = nil
     startTime = tick()
-    for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.toys) do
+    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.toys) do
         if v.id == "squeaky_bone_default" then
             boneId = i
             game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
@@ -1105,7 +1113,7 @@ function PlayTask()
         end
     end
     repeat
-        for i,v in pairs(require(game.ReplicatedStorage.ClientModules.Core.ClientData).get_data()[game.Players.LocalPlayer.Name].inventory.toys) do
+        for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.toys) do
             if v.id == "squeaky_bone_default" then
                 RS.API:WaitForChild("PetObjectAPI/CreatePetObject"):InvokeServer("__Enum_PetObjectCreatorType_1", {["reaction_name"] = "ThrowToyReaction", ["unique_id"] = i})
                 break
@@ -1539,9 +1547,9 @@ end)
 
 function GetPetTasks()
     a,b = pcall(function()
-        ailmentData = require(RS.ClientModules.Core.ClientData).get_data()[Player.Name]["ailments_manager"]
+        ailmentData = ClientData.get_data()[Player.Name]["ailments_manager"]
         if ailmentData["ailments"] and ailmentData["ailments"][Fsys("ClientData").get("pet_char_wrappers")[1].pet_unique] then
-            return require(RS.ClientModules.Core.ClientData).get_data()[Player.Name]["ailments_manager"]["ailments"][Fsys("ClientData").get("pet_char_wrappers")[1].pet_unique]
+            return ClientData.get_data()[Player.Name]["ailments_manager"]["ailments"][Fsys("ClientData").get("pet_char_wrappers")[1].pet_unique]
         else
             return {}
         end
