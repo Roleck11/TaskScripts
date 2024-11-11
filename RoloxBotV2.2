@@ -269,7 +269,7 @@ function SetStatus()
     end
     if DifBucks > 0 then Bucks = Bucks .. " (+"..DifBucks..")" end
 
-    TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBotV3.21
+    TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBotV3.26
     Status: <font color="rgb(187, 166, 255)"> ]].._G.Status..[[ </font>
     Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
     Bucks: <font color="rgb(0, 191, 41)">]]..Bucks..[[</font>
@@ -1624,6 +1624,8 @@ spawn(function()
         if HRP.CFrame.Y < -250 then
             print("Safety Net Utilized!")
             CreateTempPart()
+            HRP.CFrame = CFrame.new(-248.025375, -50, -1746.41724, -0.998434782, -7.92188573e-08, -0.0559278913, -7.50130056e-08, 1, -7.73006334e-08, 0.0559278913, -7.29843208e-08, -0.998434782)
+            CreateTempPart()
             task.wait(0.5)
             GoToMainMap()
             repeat task.wait(1) until HRP.CFrame > -250
@@ -1710,18 +1712,18 @@ while task.wait(1) do
                 spawn(function()
                     pcall(ToiletTask)
                 end)                    
-            elseif taskName == "sick" then
-                print("Sick task appeared.")
-                _G.Status = "Completing Sick Task..."
-                spawn(function()
-                    pcall(SickTask)
-                end)
-            elseif taskName == "ride" and hasVehicle() then
-                print("Ride task appeared.")
-                _G.Status = "Completing Ride Task..."
-                spawn(function()
-                    RideTask()
-                end)
+            --elseif taskName == "sick" then
+            --    print("Sick task appeared.")
+            --    _G.Status = "Completing Sick Task..."
+            --    spawn(function()
+            --        pcall(SickTask)
+            --    end)
+            --elseif taskName == "ride" and hasVehicle() then
+            --    print("Ride task appeared.")
+            --    _G.Status = "Completing Ride Task..."
+            --    spawn(function()
+            --        RideTask()
+            --    end)
             elseif taskName == "walk" then
                 print("Walk task appeared.")
                 _G.Status = "Completing Walk Task..."
@@ -1746,10 +1748,10 @@ while task.wait(1) do
             
             --print("Waiting for Task Completion!")
             startTime = tick()
-            if taskName == "walk" or taskName == "ride" then
+            if taskName == "walk" then --or taskName == "ride" then
                 task.wait(15)
                 repeat task.wait(1) until not CheckTaskExist(taskName) or (tick() - startTime >= 90)
-            elseif not taskName:match("mystery") then
+            elseif (not taskName:match("mystery")) and (taskName ~= "ride") and (taskName ~= "sick") then
                 local timeout = 60
                 repeat
                     wait(1)
