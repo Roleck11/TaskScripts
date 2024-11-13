@@ -694,7 +694,6 @@ function ClaimLureBeta()
         [5] = workspace:WaitForChild("PlayerCharacters"):WaitForChild(game.Players.LocalPlayer.Name)
     }
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
-    LureFeedBeta()
 end
 
 spawn(function()
@@ -704,6 +703,7 @@ spawn(function()
     end
     while task.wait(15) do
         pcall(ClaimLureBeta)
+        pcall(LureFeedBeta)
     end
 end)
 
