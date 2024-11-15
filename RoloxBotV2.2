@@ -778,11 +778,10 @@ for _, v in pairs(getgc()) do
 end
 
 local SetLocation = function(A, B, C)
-    local O = get_thread_identity()
     set_thread_identity(2)
     require(game.ReplicatedStorage.ClientModules.Core.InteriorsM.InteriorsM).enter(A, B, C)
     --SetLocationTP(A, B, C)
-    set_thread_identity(O)
+    set_thread_identity(8)
 end
 
 local GoToMainMap = function()
