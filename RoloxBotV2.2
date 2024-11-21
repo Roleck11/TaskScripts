@@ -281,8 +281,8 @@ function SetStatus()
             OldDifPots = DifPotion
             OldDifPotTime = os.time()
         else
-            if os.time() - OldDifPotTime >= 5400 then
-                RequestWebhook("Shutting down due to no pots in 1.5 hour")
+            if (os.time() - OldDifPotTime >= 7200) and (DifPotion > 0) and (DifPotion / math.floor((os.time() - StartTimeAC)/60/60) < 1) then
+                RequestWebhook("Shutting down due to no pots in past 2 hours")
                 game:Shutdown()
             end
         end
@@ -1079,8 +1079,9 @@ function CampingTask()
     print("Tping to Main Map")
     
     RS.API:FindFirstChild("LocationAPI/SetLocation"):FireServer("MainMap", Player, LiveOpsMapSwap.get_current_map_type())
-    
     task.wait(5)
+    if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
+
     print("Tping to Camping")
     HRP.CFrame = CFrame.new(-27,20,-1056) -- set 25
     game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
@@ -1094,8 +1095,9 @@ end
 function BeachPartyTask()
     print("Tping to Main Map")
     RS.API:FindFirstChild("LocationAPI/SetLocation"):FireServer("MainMap", Player, LiveOpsMapSwap.get_current_map_type())
-    
     task.wait(5)
+    if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
+
     print("Tping to Beach")
     HRP.CFrame = CFrame.new(-667, 20, -1421) -- set 25
     game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
