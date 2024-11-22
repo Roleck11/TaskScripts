@@ -309,7 +309,8 @@ ScreenGui.Enabled = true
 
 spawn(function()
     while task.wait(1) do
-        SetStatus()
+        successC, errorC = pcall(SetStatus)
+        if successC then print(errorC) end
     end
 end)
 
