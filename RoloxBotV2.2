@@ -281,9 +281,11 @@ function SetStatus()
             OldDifPots = DifPotion
             OldDifPotTime = os.time()
         else
-            if (os.time() - OldDifPotTime >= 7200) and (DifPotion > 0) and (DifPotion / math.floor((os.time() - StartTimeAC)/60/60) < 1) then
+            if (os.time() - OldDifPotTime >= 7200) and (DifPotion > 0) and (DifPotion / math.floor((os.time() - StartTimeAC)/60/60) < 1) and (not _G.AccStuck) then
                 RequestWebhook("Shutting down due to no pots in past 2 hours")
+                game.Players.LocalPlayer:Kick("Account is Stuck")
                 game:Shutdown()
+                _G.AccStuck = true
             end
         end
     end
