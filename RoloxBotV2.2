@@ -741,6 +741,12 @@ spawn(function()
         BuyLureBox()
         task.wait(1)
     end
+
+    -- Get Canine Truck
+    RS.API:WaitForChild("CodeRedemptionAPI/AttemptRedeemCode"):InvokeServer("AMTRUCK2024")
+    print("Fired Truck Remote")
+    
+
     if _G.LureUniqueID then
         while task.wait(1) do
             pcall(function()
@@ -1090,6 +1096,7 @@ function CampingTask()
     print("Tping to Camping")
     HRP.CFrame = CFrame.new(-27,20,-1056) -- set 25
     game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+    if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
     CreateTempPart()
     EquipLastPet()
     
@@ -1106,6 +1113,7 @@ function BeachPartyTask()
     print("Tping to Beach")
     HRP.CFrame = CFrame.new(-667, 20, -1421) -- set 25
     game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+    if workspace:FindFirstChildWhichIsA("Terrain") then workspace.Terrain:Clear() end
     CreateTempPart()
     EquipLastPet()
 end
