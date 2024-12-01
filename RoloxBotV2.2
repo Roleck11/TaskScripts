@@ -21,15 +21,17 @@ if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChil
     game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
 end
 
+
 local RS = game:GetService("ReplicatedStorage")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
---local Fsys = require(RS:WaitForChild("Fsys")).load
 local ClientData = require(RS.ClientModules.Core.ClientData)
+local Player = game:GetService("Players").LocalPlayer
 local RouterClient = require(RS.ClientModules.Core:WaitForChild("RouterClient"):WaitForChild("RouterClient"))
 local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
-local Player = game:GetService("Players").LocalPlayer
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LiveOpsMapSwap = require(game:GetService("ReplicatedStorage").SharedModules.Game.LiveOpsMapSwap)
+
+--local Fsys = require(RS:WaitForChild("Fsys")).load
 
 for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
   v:Disable()
@@ -382,6 +384,26 @@ function findPetID(petName)
     return nil
 end
 
+function findItemID(itemName, itemType)
+    for _, entry in pairs(require(game:GetService("ReplicatedStorage").ClientDB.Inventory.InventoryDB)[itemType]) do
+        if type(entry) == "table" and string.lower(entry.name) == string.lower(itemName) then
+            return entry.id
+        end
+    end
+    return nil
+end
+
+function findItemName(itemID, itemType)
+    if require(RS.ClientDB.Inventory.InventoryDB)[itemType] == nil then return "INVALID CATEGORY" end
+
+    for _, entry in pairs(require(RS.ClientDB.Inventory.InventoryDB)[itemType]) do
+        if type(entry) == "table" and string.lower(entry.id) == string.lower(itemID) then
+            return entry.name
+        end
+    end
+    return "ITEM NOT FOUND"
+end
+
 function IsInInv(petUnique)
     for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do 
         if v.unique == petUnique then return true end
@@ -399,6 +421,25 @@ function RequestWebhook(Desc)
                 ["title"] = game.Players.LocalPlayer.Name,
                 ["description"] = ("Pet Hatched: __**" ..Desc.. "**__"),
                 ["color"] = tonumber(0x7269da),
+            }
+        }
+    }
+    local HeadersVar = {
+        ["content-type"] = "application/json"
+    }  
+   Request({Url = WebhookURL, Body = game:GetService("HttpService"):JSONEncode(Data), Method = "POST", Headers = HeadersVar})
+end
+
+function SendLureNotif(Desc)
+    local WebhookURL = "https://discord.com/api/webhooks/1312873979958268036/wS1pqLcyOrxj01ydu6ck6iIIiKywiCTrXFqemonbDa2RwmAKUJQ4y08o_bSBHYBdtzpE"
+    local Request = http_request or request or HttpPost or syn.request
+    local Data = {
+        ["content"] = "",
+        ["embeds"] = {
+            {
+                ["title"] = game.Players.LocalPlayer.Name,
+                ["description"] = ("Lure Reward: __**" ..Desc.. "**__"),
+                ["color"] = tonumber(0xFFA500),
             }
         }
     }
@@ -704,24 +745,24 @@ function LureFeedBeta()
         end
     end
     local args = {
-        [1] = game.Players.LocalPlayer,
+        [1] = Player,
         [2] = _G.LureUniqueID,
         [3] = "UseBlock",
         [4] = {
             ["bait_unique"] = tostring(cookieid)
         },
-        [5] = game.Players.LocalPlayer.Character 
+        [5] = Player.Character 
     }
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
 end
 
 function ClaimLureBeta()
     local args = {
-        [1] = game:GetService("Players").LocalPlayer,
+        [1] = Player,
         [2] = _G.LureUniqueID,
         [3] = "UseBlock",
         [4] = true,
-        [5] = game.Players.LocalPlayer.Character
+        [5] = Player.Character
     }
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("HousingAPI/ActivateFurniture"):InvokeServer(unpack(args))
     LureFeedBeta()
@@ -747,8 +788,20 @@ spawn(function()
     print("Fired Truck Remote")
     
 
-    if _G.LureUniqueID then
-        while task.wait(1) do
+    
+    while task.wait(1) do
+        pcall(function()
+            -- Winter Advent Manager Claim
+            Winter2024AdventManager = ClientData.get_data()[game.Players.LocalPlayer.Name]["winter_2024_advent_manager"]
+            for i, v in pairs(Winter2024AdventManager["replicated_rewards"]) do
+                if not Winter2024AdventManager["rewards_claimed"][i] then
+                    RS.API:WaitForChild("WinterfestAPI/AdventCalendarTryTakeReward"):InvokeServer(i)
+                    print("Claimed", v["amount"], findItemName(v["kind"], v["category"]))
+                end
+            end
+        end)
+
+        if _G.LureUniqueID then
             pcall(function()
                 local PetInventory = ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets
                 for i, v in pairs(PetInventory) do
@@ -761,7 +814,15 @@ spawn(function()
                 local LureInBox = ClientData.get_data()[Player.Name].house_interior.furniture[_G.LureUniqueID].lure
                 if LureInBox then
                     if LureInBox.finished then
-                        print("Received", LureInBox.reward.kind)
+                        local successA, errorA = pcall(function()
+                            if LureInBox.reward.category == "currency" then
+                                SendLureNotif(string.format("%d %s", LureInBox.reward.amount, string.upper(LureInBox.reward.kind)))
+                            else
+                                SendLureNotif(string.format("%d %s", LureInBox.reward.amount, findItemName(LureInBox.reward.kind, LureInBox.reward.category)))
+                            end
+                        end)
+                        if not successA then print(errorA) end
+
                         ClaimLureBeta()
                     else
                         LureEndTime = LureInBox.lure_start_timestamp + 14400
