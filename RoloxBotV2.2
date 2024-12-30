@@ -2,6 +2,9 @@
 _G.AgingPotionMode = false
 _G.EggHatchMode = true
 EggName = "Garden Egg"
+
+_G.BaitName = "Burnt Bites Bait"
+_G.BaitTime = 10 --(minutes)
 ]]
 
 repeat task.wait(1) until game:IsLoaded()
@@ -379,7 +382,7 @@ end
 
 function findPetID(petName)
     for _, entry in pairs(require(game:GetService("ReplicatedStorage").ClientDB.Inventory.InventoryDB).pets) do
-        if type(entry) == "table" and string.lower(entry.name) == string.lower(petName) then
+        if type(entry) == "table" and string.lower(entry.name) == string.lower(petName) and not entry.id:match("minigame") then
             return entry.id
         end
     end
@@ -739,7 +742,14 @@ function buyFurniture(furnitureName)
 end
 ---------------------- Lure System ------------------
 print("== Lure System Activated ==")
-_G.BaitID = "lures_2023_campfire_cookies"
+if _G.BaitName then
+    _G.BaitID = findItemID(_G.BaitName, "food")
+else
+    _G.BaitID = "lures_2023_campfire_cookies"
+end
+if not _G.BaitTime then
+    _G.BaitTime = 240
+end
 _G.LureUniqueID = GetFurniture("lures_2023_normal_lure")
 
 function BuyLureBox()
@@ -794,22 +804,8 @@ spawn(function()
         BuyLureBox()
         task.wait(1)
     end
-
-    -- Get Canine Truck
-    RS.API:WaitForChild("CodeRedemptionAPI/AttemptRedeemCode"):InvokeServer("AMTRUCK2024")
-    print("Fired Truck Remote")
-    
-
-    
+   
     while task.wait(1) do
-        pcall(function()
-            -- Winter Advent Manager Claim
-            Winter2024AdventManager = ClientData.get_data()[game.Players.LocalPlayer.Name]["winter_2024_advent_manager"]
-            if not Winter2024AdventManager["rewards_claimed"][#Winter2024AdventManager["replicated_rewards"]] then
-                RS.API:WaitForChild("WinterEventAPI/AdventCalendarTryTakeReward"):InvokeServer(i)
-            end
-        end)
-
         if _G.LureUniqueID then
             pcall(function()
                 local PetInventory = ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets
@@ -834,7 +830,7 @@ spawn(function()
 
                         ClaimLureBeta()
                     else
-                        LureEndTime = LureInBox.lure_start_timestamp + 14400
+                        LureEndTime = LureInBox.lure_start_timestamp + (_G.BaitTime * 60)
                         print("Waiting", math.floor(LureEndTime - os.time()), "Seconds for Lure!")
                         task.wait(LureEndTime - os.time())
                     end
