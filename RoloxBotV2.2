@@ -20,11 +20,6 @@ end
 print("Executed Roleck Task Script - V4.0")
 repeat task.wait() until game:IsLoaded() and game:GetService("ReplicatedStorage"):FindFirstChild("ClientModules") and game:GetService("ReplicatedStorage").ClientModules:FindFirstChild("Core") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager").Apps:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp"):FindFirstChild("Whiteout")
 
-if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
-    game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
-end
-
-
 local RS = game:GetService("ReplicatedStorage")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ClientData = require(RS.ClientModules.Core.ClientData)
@@ -33,8 +28,6 @@ local RouterClient = require(RS.ClientModules.Core:WaitForChild("RouterClient"):
 local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LiveOpsMapSwap = require(game:GetService("ReplicatedStorage").SharedModules.Game.LiveOpsMapSwap)
-
---local Fsys = require(RS:WaitForChild("Fsys")).load
 
 game.Players.LocalPlayer.Idled:Connect(function() 
     game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) 
@@ -46,11 +39,6 @@ for i, v in pairs(debug.getupvalue(RouterClient.init, 7)) do
     v.Name = i
 end
 
-
----------------- Warn Control ---------------------------------
-local old;old = hookfunction(warn,function(data)
-   return
-end)
 ---------------------------------------------------------------
 
 function clickGuiButton(button: Instance, xOffset: number, yOffset: number)
@@ -307,6 +295,7 @@ function SetStatus()
     Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
     Bucks: <font color="rgb(0, 191, 41)">]]..Bucks..[[</font>
     Event Currency: <font color="rgb(237, 63, 14)">]]..EventCurrency..[[</font>
+    Shooting Stars: <font color="rgb(186, 113, 255)">]]..ClientData.get_data()[Player.Name].stars_2025..[[</font>
     Total Time: <font color="rgb(137, 41, 255)">]]..disp_time(os.time() - StartTimeAC)..[[</font>
 
     <font color="rgb(130, 255, 228)">Press Q to toggle</font>
@@ -543,6 +532,27 @@ end
 function EquipEgg()
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(GetEgg())
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(GetEgg())
+end
+
+
+-- EVENT SHOOTING STARs
+function GetAvailableShootingStars(mapName)
+    return ClientData.get_data()[Player.Name].moon_2025_shooting_stars.available_stars[mapName]
+end
+
+function FetchStars(mapName)
+
+    while task.wait() and GetAvailableShootingStars(mapName) ~= 0 do
+        for i = 1, 150 do
+            RS.API:WaitForChild("MoonAPI/ShootingStarCollected"):FireServer(
+                mapName,
+                tostring(i)
+            )
+
+            task.wait()
+        end
+    end
+
 end
 
 if _G.AgingPotionMode then
@@ -806,6 +816,11 @@ spawn(function()
     end
    
     while task.wait(1) do
+        if GetAvailableShootingStars("MainMap") > 0 then
+            FetchStars("MainMap")
+            print("[EVENT] - Collect Shooting Stars..")
+        end
+
         if _G.LureUniqueID then
             pcall(function()
                 local PetInventory = ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets
