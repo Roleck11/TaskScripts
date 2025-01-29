@@ -1,10 +1,28 @@
 --[[
+
+UPDATE:
+Added Auto Tutorial for new ver
+
+]]
+
+
+--[[
 _G.AgingPotionMode = false
 _G.EggHatchMode = true
 EggName = "Garden Egg"
 
 _G.BaitName = "Burnt Bites Bait"
 _G.BaitTime = 10 --(minutes)
+
+
+-- DATABASE
+setfpscap(2)
+getgenv().DatabaseClientConfig = {
+    ["Debug Prints"] = false,
+    ["API Username"] = "Roleck",
+    ["Device Name"] = "VPS8"
+}
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/RoloxBotV2.2"))()
 ]]
 
 repeat task.wait(1) until game:IsLoaded()
@@ -29,6 +47,8 @@ local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LiveOpsMapSwap = require(game:GetService("ReplicatedStorage").SharedModules.Game.LiveOpsMapSwap)
 
+local LegacyTutorial = require(ReplicatedStorage.ClientModules:WaitForChild('Game'):WaitForChild('Tutorial'):WaitForChild('LegacyTutorial'))
+
 game.Players.LocalPlayer.Idled:Connect(function() 
     game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) 
     task.wait(1)
@@ -51,13 +71,57 @@ function clickGuiButton(button: Instance, xOffset: number, yOffset: number)
 	task.wait()
 end
 
-function CheckStarterEgg()
-    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-        if v.id == "starter_egg" then
-            return true
+function CompleteStarterTutorial()
+    local success, errorMessage = pcall(function()
+        --task.wait(1)
+        print('START DOING TUTORIAL')
+        --LegacyTutorial.cancel_tutorial()
+        task.wait(1)
+        ReplicatedStorage.API['LegacyTutorialAPI/MarkTutorialCompleted']:FireServer()
+        print('MarkTutorialCompleted')
+        task.wait(1)
+        ReplicatedStorage.API['LegacyTutorialAPI/EquipTutorialEgg']:FireServer()
+        print('EquipTutorialEgg')
+        task.wait(1)
+        --ReplicatedStorage.API['LegacyTutorialAPI/AddTutorialQuest']:FireServer()
+        --print('AddTutorialQuest')
+        --task.wait(1)
+        ReplicatedStorage.API['LegacyTutorialAPI/AddHungryAilmentToTutorialEgg']:FireServer()
+        print('AddHungryAilmentToTutorialEgg')
+        task.wait(1)
+
+        local function feedStartEgg(SandwichPassOn)
+            local Foodid2
+
+            for _, v in pairs(ClientData.get_data()[Player.Name].inventory.food)do
+                if v.id == SandwichPassOn then
+                    Foodid2 = v.unique
+
+                    break
+                end
+            end
+
+            ReplicatedStorage.API['ToolAPI/Equip']:InvokeServer(Foodid2, {
+                ['use_sound_delay'] = true,
+            })
+            task.wait(1)
+
+            local args = {
+                [1] = '__Enum_PetObjectCreatorType_2',
+                [2] = {
+                    ['pet_unique'] = ClientData.get('pet_char_wrappers')[1].pet_unique,
+                    ['unique_id'] = Foodid2,
+                },
+            }
+
+            ReplicatedStorage.API['PetObjectAPI/CreatePetObject']:InvokeServer(unpack(args))
         end
-    end
-    return false
+
+        feedStartEgg('sandwich-default')
+    end)
+
+    print('Tutorial Completed :', success, errorMessage)
+    task.wait(10)
 end
 
 function CheckTradeLicense()
@@ -69,9 +133,20 @@ function CheckTradeLicense()
     return false
 end
 
-if CheckStarterEgg() and require(game:GetService("ReplicatedStorage").ClientModules.Game.ColorThemeManager).get_theme_color() == "pink" then
-    game:GetService("ReplicatedStorage").API["SettingsAPI/SetSetting"]:FireServer("theme_color", "black")
-    task.wait(3)
+function CheckStarterEgg()
+    for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        if v.id == "starter_egg" then
+            return true
+        end
+    end
+    return false
+end
+
+if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.completed then
+    print('New Acc Detected! Setting theme colour..')
+
+    RS.API["SettingsAPI/SetSetting"]:FireServer("theme_color", "black")
+    task.wait(1)
 end
 
 repeat
@@ -91,6 +166,7 @@ repeat
             end
         end
     end
+    task.wait()
     Player.PlayerGui:WaitForChild("DailyLoginApp")
     if Player.PlayerGui.DailyLoginApp.Enabled and Player.PlayerGui.DailyLoginApp.Frame.Visible then 
         for i,v in pairs(Player.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
@@ -109,28 +185,34 @@ repeat
     end
 until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 
-if CheckStarterEgg() and require(game:GetService("ReplicatedStorage").ClientModules.Game.ColorThemeManager).get_theme_color() == "pink" then
-    local Tutorial_Statuses = {"Avatar Tutorial Started", "Avatar Editor Opened", "Avatar Editor Closed", "Housing Tutorial Started", "Housing Editor Opened", "House Exited", "Nursery Tutorial Started", "Nursery Entered", "Started Egg Received", "Quest Tutorial Started", "Quest App Opened", "Quest App Closed", "Tutorial Ailment Spawned"}
-    Main_Menu.run_tutorial = function() return end 
-    Main_Menu.run_housing_tutorial = function() return end 
-    Main_Menu.name_pet_mini_tutorial = function() return end
-    Main_Menu.run_avatar_tutorial = function() return end
-    Main_Menu.run_nursery_tutorial = function() return end 
-    Main_Menu.get_should_skip_tutorial = function() return true end 
-    require(game:GetService("ReplicatedStorage").SharedModules.PolicyHelper).is_external_link_allowed = function() return false end 
-    Main_Menu.has_spoken_with_sir_woofington = function() return true end 
-    Main_Menu.is_legacy_housing_tutorial_done = function() return true end 
-    local args = {
-        [1] = "Parents",
-        [2] = {["dont_send_back_home"] = true}
-    }
-    game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("TeamAPI/ChooseTeam"):InvokeServer(unpack(args))
-    for i,v in pairs(Tutorial_Statuses) do task.wait()
-        RS.API["LegacyTutorialAPI/StashTutorialStatus"]:FireServer(v)
-        RS.API["LegacyTutorialAPI/MarkTutorialCompleted"]:FireServer()
+if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.completed then
+    print("Tutorial Status: false")
+
+    if #workspace.Interiors:GetChildren() == 1 and workspace.Interiors:FindFirstChildWhichIsA("Model").Name:match("Tutorial") then
+        print('Completing new tutorial..')
+        RS.API:WaitForChild('TutorialAPI/ChoosePet'):FireServer('cat')
+        task.wait(3)
+
+        RS.API['TutorialAPI/ReportHousingTutorialCompleted']:FireServer()
+        task.wait(3)
+        RS.API['TutorialAPI/ReportTutorialCompleted']:FireServer()
+        task.wait(1)
+
+        game:Shutdown()
     end
-    RS.API["LegacyTutorialAPI/EquipTutorialEgg"]:FireServer()
-    game:Shutdown()
+
+    if CheckStarterEgg() or (not CheckTradeLicense()) then task.wait(10) end
+    if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match('Welcome to Adopt Me!') then
+        print('Completing Starter Tutorial..')
+        CompleteStarterTutorial()
+        task.wait(1)
+        RS.API['TutorialAPI/ReportHousingTutorialCompleted']:FireServer()
+        task.wait(1)
+        RS.API['TutorialAPI/ReportTutorialCompleted']:FireServer()
+        task.wait(1)
+        game:Shutdown()
+    end
+    
 end
 
 task.spawn(function()
@@ -141,8 +223,10 @@ task.spawn(function()
                 if type(v) == "table" and rawget(v,"question_index") then
                     for i,v in pairs(v.quiz) do
                         game:GetService("ReplicatedStorage"):WaitForChild("API"):FindFirstChild("TradeAPI/AnswerQuizQuestion"):FireServer(v.answer)
+                        task.wait()
                     end 
-                end 
+                end
+                task.wait()
             end
         end)
         task.wait(1)
@@ -187,12 +271,13 @@ game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Enabled = false
 game:GetService("Players").LocalPlayer.PlayerGui.InteractionsApp.Enabled = false
 game:GetService("Players").LocalPlayer.PlayerGui.NavigatorApp.Enabled = false
 
-------- Transition App Disabled (whatever it is) --------
+------- Disable Transition App --------
 require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).transition = function() return end 
 require(game.ReplicatedStorage.ClientModules.Core.UIManager.Apps.TransitionsApp).sudden_fill = function() return end
 if game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible then 
     game:GetService("Players").LocalPlayer.PlayerGui.TransitionsApp:FindFirstChild("Whiteout").Visible = false 
 end
+
 --------- Rolox OVerlay Screen
 ScreenGui = Instance.new("ScreenGui")
 Frame = Instance.new("Frame")
@@ -541,18 +626,15 @@ function GetAvailableShootingStars(mapName)
 end
 
 function FetchStars(mapName)
-
     while task.wait() and GetAvailableShootingStars(mapName) ~= 0 do
         for i = 1, 150 do
             RS.API:WaitForChild("MoonAPI/ShootingStarCollected"):FireServer(
                 mapName,
                 tostring(i)
             )
-
             task.wait()
         end
     end
-
 end
 
 if _G.AgingPotionMode then
@@ -647,7 +729,7 @@ if _G.AgingPotionMode then
                     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
                     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
                     print("FG Pet equipped : ", i)
-                    PetName = ClientData.get("pet_char_wrappers")[1].char
+                    PetName = ClientData.get("pet_char_wrappers")[1].char.Name
                     print("New Pet Name :", PetName)
                     _G.cFoundFGPet = true
                     MainPet = i
@@ -661,7 +743,7 @@ if _G.AgingPotionMode then
                         game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Unequip"):InvokeServer(i)
                         game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(i)
                         print("Found Pet : ", i)
-                        PetName = ClientData.get("pet_char_wrappers")[1].char
+                        PetName = ClientData.get("pet_char_wrappers")[1].char.Name
                         print("New Pet Name :", PetName)
                         MainPet = i
                         break
@@ -684,20 +766,20 @@ if _G.AgingPotionMode then
 
     repeat task.wait(1) until ClientData.get("pet_char_wrappers")[1] and ClientData.get("pet_char_wrappers")[1].char
 
-    PetName = ClientData.get("pet_char_wrappers")[1].char
+    PetName = ClientData.get("pet_char_wrappers")[1].char.Name
     print("== Pet Name:", PetName, "==")
     selectedPetID = ClientData.get("pet_char_wrappers")[1].pet_unique
 
     spawn(function()
         while task.wait(30) do
-            pcall(function()
+            local s, e = pcall(function()
                 if ClientData.get("pet_char_wrappers") and ClientData.get("pet_char_wrappers")[1] and ClientData.get("pet_char_wrappers")[1].pet_unique ~= selectedPetID then
                     print("Other Pet Found: ", ClientData.get("pet_char_wrappers")[1].char, PetName)
-                    if PetName.Name:match("Egg") then
+                    if PetName:match("Egg") then
                         print("Egg Hatched, changing Main Pet..")
                         MainPet = ClientData.get("pet_char_wrappers")[1].pet_unique
                         selectedPetID = ClientData.get("pet_char_wrappers")[1].pet_unique
-                        PetName = ClientData.get("pet_char_wrappers")[1].char
+                        PetName = ClientData.get("pet_char_wrappers")[1].char.Name
                         EquipMainPet(MainPet)
                     else
                         EquipMainPet(MainPet)
@@ -706,6 +788,7 @@ if _G.AgingPotionMode then
                     EquipMainPet(MainPet)
                 end
             end)
+            if not s then print(e) end
         end
     end)
 end
@@ -816,9 +899,11 @@ spawn(function()
     end
    
     while task.wait(1) do
-        if GetAvailableShootingStars("MainMap") > 0 then
-            FetchStars("MainMap")
-            print("[EVENT] - Collect Shooting Stars..")
+        for i, v in pairs(ClientData.get_data()[Player.Name].moon_2025_shooting_stars.spawn_limits) do 
+            if GetAvailableShootingStars(i) > 0 then
+                FetchStars(i)
+                print("[EVENT] - Collected Shooting Stars from :", i)
+            end 
         end
 
         if _G.LureUniqueID then
@@ -1881,14 +1966,6 @@ spawn(function()
     end
 end)
 
---[[
-spawn(function()
-    while task.wait(1) do
-        farmGingerbreads()
-        task.wait(200)
-    end
-end)
-]]
 
 -- Get 30 Golden Apples
 local args = {
@@ -1907,13 +1984,14 @@ task.wait(2)
 getgenv().MysteryChoosing = false
 
 while task.wait(1) do
-    pcall(function()
+    local s, e = pcall(function()
         if ClientData.get("pet_char_wrappers") and ClientData.get("pet_char_wrappers")[1] and ClientData.get("pet_char_wrappers")[1].pet_unique ~= selectedPetID then
             print("[0] Other Pet Found: ", ClientData.get("pet_char_wrappers")[1].char, PetName)
-            if PetName.Name:match("Egg") then
+            if PetName:match("Egg") then
                 print("[0] Egg Hatched, changing Main Pet..")
                 MainPet = ClientData.get("pet_char_wrappers")[1].pet_unique
                 selectedPetID = ClientData.get("pet_char_wrappers")[1].pet_unique
+                PetName = ClientData.get("pet_char_wrappers")[1].char.Name
             else
                 EquipMainPet(MainPet)
             end
@@ -1922,6 +2000,7 @@ while task.wait(1) do
             EquipMainPet(MainPet)
         end
     end)
+    if not s then print(e) end
 
     pcall(function()
         for taskName, v in pairs(GetPetTasks()) do
