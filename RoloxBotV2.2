@@ -49,6 +49,10 @@ local LiveOpsMapSwap = require(game:GetService("ReplicatedStorage").SharedModule
 
 local LegacyTutorial = require(ReplicatedStorage.ClientModules:WaitForChild('Game'):WaitForChild('Tutorial'):WaitForChild('LegacyTutorial'))
 
+local PetName = ""
+local selectedPetID = ""
+local MainPet = ""
+
 game.Players.LocalPlayer.Idled:Connect(function() 
     game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) 
     task.wait(1)
@@ -217,18 +221,17 @@ end
 
 task.spawn(function()
     while not CheckTradeLicense() do
-        pcall(function()
+        local a,b = pcall(function()
             game:GetService("ReplicatedStorage"):WaitForChild("API"):FindFirstChild("TradeAPI/BeginQuiz"):FireServer()
             for i,v in pairs(getgc(true)) do
                 if type(v) == "table" and rawget(v,"question_index") then
                     for i,v in pairs(v.quiz) do
                         game:GetService("ReplicatedStorage"):WaitForChild("API"):FindFirstChild("TradeAPI/AnswerQuizQuestion"):FireServer(v.answer)
-                        task.wait()
                     end 
                 end
-                task.wait()
             end
         end)
+        if not a then print(b) end
         task.wait(1)
     end
 end)
@@ -370,6 +373,12 @@ function SetStatus()
         end
     end
 
+    numHatched = 0
+    tempEggHatch = ""
+    if _G.EggHatchMode then
+        tempEggHatch = 'Eggs Hatched: <font color="rgb(41, 255, 226)">'..tostring(numHatched)..'</font>'
+    end
+
     getgenv().StatsAM = {
         Bucks = DifBucks,
         Potions = DifPotion
@@ -380,9 +389,9 @@ function SetStatus()
     Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
     Bucks: <font color="rgb(0, 191, 41)">]]..Bucks..[[</font>
     Event Currency: <font color="rgb(237, 63, 14)">]]..EventCurrency..[[</font>
-    Shooting Stars: <font color="rgb(186, 113, 255)">]]..ClientData.get_data()[Player.Name].stars_2025..[[</font>
+    ]]..tempEggHatch..[[
     Total Time: <font color="rgb(137, 41, 255)">]]..disp_time(os.time() - StartTimeAC)..[[</font>
-
+    
     <font color="rgb(130, 255, 228)">Press Q to toggle</font>
     ]]
 end
@@ -1984,23 +1993,25 @@ task.wait(2)
 getgenv().MysteryChoosing = false
 
 while task.wait(1) do
-    local s, e = pcall(function()
-        if ClientData.get("pet_char_wrappers") and ClientData.get("pet_char_wrappers")[1] and ClientData.get("pet_char_wrappers")[1].pet_unique ~= selectedPetID then
-            print("[0] Other Pet Found: ", ClientData.get("pet_char_wrappers")[1].char, PetName)
-            if PetName:match("Egg") then
-                print("[0] Egg Hatched, changing Main Pet..")
-                MainPet = ClientData.get("pet_char_wrappers")[1].pet_unique
-                selectedPetID = ClientData.get("pet_char_wrappers")[1].pet_unique
-                PetName = ClientData.get("pet_char_wrappers")[1].char.Name
-            else
+    if _G.AgingPotionMode then
+        local s, e = pcall(function()
+            if ClientData.get("pet_char_wrappers") and ClientData.get("pet_char_wrappers")[1] and ClientData.get("pet_char_wrappers")[1].pet_unique ~= selectedPetID then
+                print("[0] Other Pet Found: ", ClientData.get("pet_char_wrappers")[1].char, PetName)
+                if PetName:match("Egg") then
+                    print("[0] Egg Hatched, changing Main Pet..")
+                    MainPet = ClientData.get("pet_char_wrappers")[1].pet_unique
+                    selectedPetID = ClientData.get("pet_char_wrappers")[1].pet_unique
+                    PetName = ClientData.get("pet_char_wrappers")[1].char.Name
+                else
+                    EquipMainPet(MainPet)
+                end
+            elseif not ClientData.get("pet_char_wrappers")[1] then
+                print("[0] No Pet Equipped, equipping main pet!")
                 EquipMainPet(MainPet)
             end
-        elseif not ClientData.get("pet_char_wrappers")[1] then
-            print("[0] No Pet Equipped, equipping main pet!")
-            EquipMainPet(MainPet)
-        end
-    end)
-    if not s then print(e) end
+        end)
+        if not s then print(e) end
+    end
 
     pcall(function()
         for taskName, v in pairs(GetPetTasks()) do
