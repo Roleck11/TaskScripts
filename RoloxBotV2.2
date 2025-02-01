@@ -636,7 +636,7 @@ function GetAvailableShootingStars(mapName)
     return ClientData.get_data()[Player.Name].moon_2025_shooting_stars.available_stars[mapName]
 end
 
-function FetchStars(mapName)
+function FetchNormalStars(mapName)
     while task.wait() and GetAvailableShootingStars(mapName) ~= 0 do
         for i = 1, 150 do
             RS.API:WaitForChild("MoonAPI/ShootingStarCollected"):FireServer(
@@ -646,19 +646,17 @@ function FetchStars(mapName)
             task.wait()
         end
     end
+end
 
-    a = ClientData.get_data()[Player.Name].moon_2025_shooting_stars
-    if a.special_stars_collected_today < a.special_stars_allowed_today then
-        for i = 1, 150 do
-            RS.API:WaitForChild("MoonAPI/ShootingStarCollected"):FireServer(
-                mapName,
-                tostring(i),
-                true
-            )
-            task.wait()
-            if a.special_stars_collected_today >= a.special_stars_allowed_today then break end
-        end
-        
+function FetchSpecialStars(mapName)
+    for i = 1, 150 do
+        RS.API:WaitForChild("MoonAPI/ShootingStarCollected"):FireServer(
+            mapName,
+            tostring(i),
+            true
+        )
+        task.wait()
+        if ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_collected_today >= ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_allowed_today then return end
     end
 end
 
@@ -926,11 +924,21 @@ spawn(function()
     while task.wait(1) do
         for i, v in pairs(ClientData.get_data()[Player.Name].moon_2025_shooting_stars.spawn_limits) do 
             if GetAvailableShootingStars(i) > 0 then
-                FetchStars(i)
+                FetchNormalStars(i)
                 print("[EVENT] - Collected Shooting Stars from :", i)
-            end 
+            end
         end
 
+        while ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_collected_today < ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_allowed_today and task.wait(1) do
+            for i, v in pairs(ClientData.get_data()[Player.Name].moon_2025_shooting_stars.spawn_limits) do 
+                FetchSpecialStars(i)
+                    
+                if ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_collected_today >= ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_allowed_today then break end
+            end
+        end   
+        print("[EVENT] - Collected Special Stars!")
+
+        
         if _G.LureUniqueID then
             pcall(function()
                 local PetInventory = ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets
