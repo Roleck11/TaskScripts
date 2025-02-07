@@ -930,6 +930,7 @@ spawn(function()
         end
 
         while ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_collected_today < ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_allowed_today and task.wait(1) do
+            print("looping..")
             for i, v in pairs(ClientData.get_data()[Player.Name].moon_2025_shooting_stars.spawn_limits) do 
                 FetchSpecialStars(i)
                     
@@ -2101,6 +2102,10 @@ while task.wait(1) do
                     print("[PET] - Play task appeared.")
                     _G.Status = "Completing Play Task..."
                     PlayTask()
+                -- MOON TASK
+                elseif taskName == "moon" then
+                    RS.API:FindFirstChild("LocationAPI/SetLocation"):FireServer("MoonInterior")
+                    repeat task.wait(1) until not CheckTaskExist("moon") or (tick() - st >= 60)
                 elseif taskName:match("mystery") and not getgenv().MysteryChoosing then
                     print("[PET] - Choosing Random Mystery Task!")
                     getgenv().MysteryChoosing = true
