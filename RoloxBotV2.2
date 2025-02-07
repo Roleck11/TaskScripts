@@ -384,6 +384,8 @@ function SetStatus()
         Potions = DifPotion
     }
 
+    -- confusion occurs?? Eggs Hatched: <font color="rgb(41, 255, 226)">]]..tostring(numHatched)..[[</font>
+
     if _G.EggHatchMode then
         TextLabel.Text = [[<font color="rgb(255,180,180)">]]..game.Players.LocalPlayer.Name..[[</font> - RoloxBotV3.40
         Status: <font color="rgb(187, 166, 255)"> ]].._G.Status..[[ </font>
@@ -393,7 +395,6 @@ function SetStatus()
         Special Stars: <font color="rgb(215, 255, 70)">]]..ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars..[[</font>
         
         Moon Pets: <font color="rgb(209, 192, 140)">]] .. tostring(pet_L) .. "L " .. tostring(pet_UR) .. "UR " .. tostring(pet_R) .. "R" .. [[</font>    
-        Eggs Hatched: <font color="rgb(41, 255, 226)">]]..tostring(numHatched)..[[</font>
         Total Time: <font color="rgb(137, 41, 255)">]]..disp_time(os.time() - StartTimeAC)..[[</font>
         
         <font color="rgb(130, 255, 228)">Press Q to toggle</font>
@@ -2048,11 +2049,11 @@ while task.wait(1) do
                     pet_UR = 0
                     pet_R = 0
                     for i, v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-                        if v.id == findPetID("Sunglider") and v.id == findPetID("Dimension Drifter") then
+                        if v.id == findPetID("Sunglider") or v.id == findPetID("Dimension Drifter") then
                             pet_L = pet_L + 1
-                        elseif v.id == findPetID("Starmite") and v.id == findPetID("Puptune") then
+                        elseif v.id == findPetID("Starmite") or v.id == findPetID("Puptune") then
                             pet_UR = pet_UR + 1
-                        elseif v.id == findPetID("Zeopod") and v.id == findPetID("Moonpine") then
+                        elseif v.id == findPetID("Zeopod") or v.id == findPetID("Moonpine") then
                             pet_R = pet_R + 1
                         end
                     end
