@@ -9,7 +9,7 @@ Added Auto Tutorial for new ver
 --[[
 _G.AgingPotionMode = false
 _G.EggHatchMode = true
-EggName = "Garden Egg"
+EggName = "Moon Egg"
 
 _G.BaitName = "Burnt Bites Bait"
 _G.BaitTime = 10 --(minutes)
@@ -937,6 +937,17 @@ spawn(function()
         task.wait(1)
     end
    
+    -- Update Pets
+    for i, v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
+        if v.id == findPetID("Sunglider") or v.id == findPetID("Dimension Drifter") then
+            pet_L = pet_L + 1
+        elseif v.id == findPetID("Starmite") or v.id == findPetID("Puptune") then
+            pet_UR = pet_UR + 1
+        elseif v.id == findPetID("Zeopod") or v.id == findPetID("Moonpine") then
+            pet_R = pet_R + 1
+        end
+    end
+
     while task.wait(1) do
         for i, v in pairs(ClientData.get_data()[Player.Name].moon_2025_shooting_stars.spawn_limits) do 
             if GetAvailableShootingStars(i) > 0 then
