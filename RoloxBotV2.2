@@ -392,7 +392,6 @@ function SetStatus()
         Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
         Bucks: <font color="rgb(0, 191, 41)">]]..Bucks..[[</font>
         Event Currency: <font color="rgb(237, 63, 14)">]]..EventCurrency..[[</font>
-        Special Stars: <font color="rgb(215, 255, 70)">]]..ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars..[[</font>
         
         Moon Pets: <font color="rgb(209, 192, 140)">]] .. tostring(pet_L) .. "L " .. tostring(pet_UR) .. "UR " .. tostring(pet_R) .. "R" .. [[</font>    
         Total Time: <font color="rgb(137, 41, 255)">]]..disp_time(os.time() - StartTimeAC)..[[</font>
@@ -405,7 +404,6 @@ function SetStatus()
         Potions: <font color="rgb(252, 207, 71)">]]..Potions..[[</font>
         Bucks: <font color="rgb(0, 191, 41)">]]..Bucks..[[</font>
         Event Currency: <font color="rgb(237, 63, 14)">]]..EventCurrency..[[</font>
-        Special Stars: <font color="rgb(215, 255, 70)">]]..ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars..[[</font>
         
         Total Time: <font color="rgb(137, 41, 255)">]]..disp_time(os.time() - StartTimeAC)..[[</font>
         
@@ -646,35 +644,6 @@ function EquipEgg()
     game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/Equip"):InvokeServer(GetEgg())
 end
 
-
--- EVENT SHOOTING STARs
-function GetAvailableShootingStars(mapName)
-    return ClientData.get_data()[Player.Name].moon_2025_shooting_stars.available_stars[mapName]
-end
-
-function FetchNormalStars(mapName)
-    while task.wait() and GetAvailableShootingStars(mapName) ~= 0 do
-        for i = 1, 150 do
-            RS.API:WaitForChild("MoonAPI/ShootingStarCollected"):FireServer(
-                mapName,
-                tostring(i)
-            )
-            task.wait()
-        end
-    end
-end
-
-function FetchSpecialStars(mapName)
-    for i = 1, 150 do
-        RS.API:WaitForChild("MoonAPI/ShootingStarCollected"):FireServer(
-            mapName,
-            tostring(i),
-            true
-        )
-        task.wait()
-        if ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_collected_today >= ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_allowed_today then return end
-    end
-end
 
 if _G.AgingPotionMode then
     print("== Selected Mode : Aging Potion ==")
@@ -956,25 +925,7 @@ spawn(function()
         end
     end
 
-    while task.wait(1) do
-        for i, v in pairs(ClientData.get_data()[Player.Name].moon_2025_shooting_stars.spawn_limits) do 
-            if GetAvailableShootingStars(i) > 0 then
-                FetchNormalStars(i)
-                print("[EVENT] - Collected Shooting Stars from :", i)
-            end
-        end
-
-        while ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_collected_today < ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_allowed_today and task.wait(1) do
-            print("looping..")
-            for i, v in pairs(ClientData.get_data()[Player.Name].moon_2025_shooting_stars.spawn_limits) do 
-                FetchSpecialStars(i)
-                    
-                if ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_collected_today >= ClientData.get_data()[Player.Name].moon_2025_shooting_stars.special_stars_allowed_today then break end
-            end
-        end   
-        print("[EVENT] - Collected Special Stars!")
-
-        
+    while task.wait(1) do        
         if _G.LureUniqueID then
             pcall(function()
                 local PetInventory = ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets
