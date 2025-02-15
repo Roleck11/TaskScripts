@@ -900,6 +900,22 @@ function ClaimLureBeta()
 end
 
 spawn(function()
+    while task.wait() do
+        for i = 1, 8 do
+            RS.API:WaitForChild("ValentinesEventAPI/PickupRose"):FireServer(i)
+        
+            local args = {
+                [1] = i,
+                [2] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,16 ,17, 18, 19,20}
+            }
+            RS.API:WaitForChild("ValentinesEventAPI/PickupRoseHearts"):FireServer(unpack(args))
+            task.wait(1)
+        end
+        task.wait(60)
+    end
+end)
+
+spawn(function()
     if _G.LureUniqueID == nil and ClientData.get("money") >= 750 then
         print("Buying Lure Box")
         BuyLureBox()
