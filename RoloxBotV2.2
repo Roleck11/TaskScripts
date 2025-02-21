@@ -204,14 +204,14 @@ if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.com
             RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("npc_interaction")
             task.wait(.25)
             
-            RS.API["TutorialAPI/ChoosePet"]:FireServer("dog")
+            RS.API["TutorialAPI/ChoosePet"]:FireServer("cat")
             task.wait(.25)
             
             print("Selected Pet")
-            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(2, {["chosen_pet"] = "dog"})
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(2, {["chosen_pet"] = "cat"})
             task.wait(.25)
             
-            RS.API["PetAPI/ResetNetworkOwnership"]:FireServer(workspace:WaitForChild("Pets"):WaitForChild("Dog"))
+            RS.API["PetAPI/ResetNetworkOwnership"]:FireServer(workspace:WaitForChild("Pets"):WaitForChild("Cat"))
             task.wait(.25)
             
             RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(3, {["named_pet"] = false})
