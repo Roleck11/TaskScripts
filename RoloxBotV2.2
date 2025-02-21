@@ -712,13 +712,14 @@ if _G.AgingPotionMode then
         if v.properties.age == 6 and not v.id:match("winter_2024") then
             table.insert(Pets, i)
         end
+        if (v.id == findPetID("Cat") or v.id == findPetID("Dog")) and (v.properties.age == 1 or v.properties.age == 2) then RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("cured_dirty_ailment") end -- FIX STUCK TASK
     end
 
     if #Pets == 0 then
         print("------  0 Full Grown Pets  -----")
         Pets = {}
         for i,v in pairs(ClientData.get_data()[game.Players.LocalPlayer.Name].inventory.pets) do
-            if v.id ~= "practice_dog" and not v.id:match("winter_2024") then    
+            if v.id ~= "practice_dog" and not v.id:match("winter_2024") then
                 table.insert(Pets, i)
             end
         end
