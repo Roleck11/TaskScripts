@@ -20,7 +20,7 @@ setfpscap(2)
 getgenv().DatabaseClientConfig = {
     ["Debug Prints"] = false,
     ["API Username"] = "Roleck",
-    ["Device Name"] = "VPS8"
+    ["Device Name"] = "VPS1"
 }
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Roleck11/TaskScripts/main/RoloxBotV2.2"))()
 ]]
@@ -196,17 +196,76 @@ repeat
 until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 
 if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.completed then
-    print("Tutorial Status: false")
+    print("Tutorial Status: False")
 
     if #workspace.Interiors:GetChildren() == 1 and workspace.Interiors:FindFirstChildWhichIsA("Model").Name:match("Tutorial") then
         print('Completing new tutorial..')
-        RS.API:WaitForChild('TutorialAPI/ChoosePet'):FireServer('cat')
-        task.wait(3)
-
-        RS.API['TutorialAPI/ReportHousingTutorialCompleted']:FireServer()
-        task.wait(3)
-        RS.API['TutorialAPI/ReportTutorialCompleted']:FireServer()
-        task.wait(1)
+        local s, e = pcall(function()
+            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("npc_interaction")
+            task.wait(.25)
+            
+            RS.API["TutorialAPI/ChoosePet"]:FireServer("dog")
+            task.wait(.25)
+            
+            print("Selected Pet")
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(2, {["chosen_pet"] = "dog"})
+            task.wait(.25)
+            
+            RS.API["PetAPI/ResetNetworkOwnership"]:FireServer(workspace:WaitForChild("Pets"):WaitForChild("Dog"))
+            task.wait(.25)
+            
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(3, {["named_pet"] = false})
+            
+            print("Spawned Pet Me Task!")
+            RS.API["TutorialAPI/SpawnTutorialAilment"]:FireServer("pet_me")
+            task.wait(.25)
+            
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(4)
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(5)
+            
+            RS.API["TutorialAPI/SpawnPetTreat"]:FireServer()
+            
+            RS.API["TutorialAPI/SpawnTutorialAilment"]:FireServer("hungry")
+            
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(6)
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(7)
+            
+            
+            RS.API["TutorialAPI/AddTutorialQuest"]:FireServer()
+            
+            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("opened_taskboard")
+            RS.API["QuestAPI/MarkQuestsViewed"]:FireServer()
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(8)
+            
+            -- Spawn Play Task
+            print("Spawned Play Task")
+            RS.API["TutorialAPI/SpawnTutorialAilment"]:FireServer("play")
+            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("focused_pet_3")
+            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("started_playground_nav")
+            task.wait(.25)
+            
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(9)
+            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("opened_taskboard_2")
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(10)
+            
+            task.wait(.25)
+            print("Spawned Dirty Task")
+            RS.API["TutorialAPI/SpawnTutorialAilment"]:FireServer("dirty")
+            
+            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("focused_pet_4")
+            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("started_home_nav")
+            
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(11)
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(12)
+            RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(13)
+            task.wait(.25)
+            
+            RS.API["TutorialAPI/ReportTutorialCompleted"]:FireServer()
+            print("Tutorial Completed!")
+            
+            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("cured_dirty_ailment")
+        end)
+        if s then print("SUCCESS") else print("ERROR:", e) end
 
         game:Shutdown()
     end
@@ -214,12 +273,13 @@ if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.com
     if CheckStarterEgg() or (not CheckTradeLicense()) then task.wait(10) end
     if Player.PlayerGui.DialogApp.Dialog.NormalDialog.Info.TextLabel.Text:match('Welcome to Adopt Me!') then
         print('Completing Starter Tutorial..')
-        CompleteStarterTutorial()
+        local s, e = pcall(CompleteStarterTutorial)
+        if s then print("[OUTPUT] - Successfully completed Starter Tutorial!") else print("[ERROR] - Error occured while doing tutorial:", e) end
         task.wait(1)
-        RS.API['TutorialAPI/ReportHousingTutorialCompleted']:FireServer()
-        task.wait(1)
-        RS.API['TutorialAPI/ReportTutorialCompleted']:FireServer()
-        task.wait(1)
+        pcall(function()
+            RS.API['TutorialAPI/ReportTutorialCompleted']:FireServer()
+            task.wait(1)
+        end)
         game:Shutdown()
     end
     
