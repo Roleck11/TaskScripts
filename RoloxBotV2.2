@@ -159,41 +159,43 @@ if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.com
     task.wait(1)
 end
 
-repeat
-    if Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Visible then
-        clickGuiButton(Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton)
-    end
-    if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.Visible then
-        clickGuiButton(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby)
-    end
-    task.wait(1.1)
-    -- After Choose Parent
-    Player.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
-    if Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
-        for i,v in pairs(Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
-            if v.ClassName == "ImageButton" then 
-                clickGuiButton(v)
+if not (game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")) then
+    repeat
+        if Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Visible then
+            clickGuiButton(Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton)
+        end
+        if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.Visible then
+            clickGuiButton(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby)
+        end
+        task.wait(1.1)
+        -- After Choose Parent
+        Player.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+        if Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
+            for i,v in pairs(Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
+                if v.ClassName == "ImageButton" then 
+                    clickGuiButton(v)
+                end
             end
         end
-    end
-    task.wait()
-    Player.PlayerGui:WaitForChild("DailyLoginApp")
-    if Player.PlayerGui.DailyLoginApp.Enabled and Player.PlayerGui.DailyLoginApp.Frame.Visible then 
-        for i,v in pairs(Player.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
-            if v.Name == "ClaimButton" then
-                clickGuiButton(v)
-            end 
-        end
-    end
-    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
-            if v.ClassName == "ImageButton" then 
-                clickGuiButton(v)
+        task.wait()
+        Player.PlayerGui:WaitForChild("DailyLoginApp")
+        if Player.PlayerGui.DailyLoginApp.Enabled and Player.PlayerGui.DailyLoginApp.Frame.Visible then 
+            for i,v in pairs(Player.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
+                if v.Name == "ClaimButton" then
+                    clickGuiButton(v)
+                end 
             end
         end
-    end
-until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+        game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
+        if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
+            for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
+                if v.ClassName == "ImageButton" then 
+                    clickGuiButton(v)
+                end
+            end
+        end
+    until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+end
 
 if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.completed then
     print("Tutorial Status: False")
@@ -211,7 +213,7 @@ if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.com
             RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(2, {["chosen_pet"] = "cat"})
             task.wait(.25)
             
-            RS.API["PetAPI/ResetNetworkOwnership"]:FireServer(workspace:WaitForChild("Pets"):WaitForChild("Cat"))
+            RS.API["PetAPI/ResetNetworkOwnership"]:FireServer(ClientData.get("pet_char_wrappers")[1].char)
             task.wait(.25)
             
             RS.API["TutorialAPI/ReportStepCompleted"]:FireServer(3, {["named_pet"] = false})
@@ -261,9 +263,12 @@ if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.com
             task.wait(.25)
             
             RS.API["TutorialAPI/ReportTutorialCompleted"]:FireServer()
+            task.wait(0.25)
+
+            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("cured_dirty_ailment")
             print("Tutorial Completed!")
             
-            RS.API["TutorialAPI/ReportDiscreteStep"]:FireServer("cured_dirty_ailment")
+            
         end)
         if s then print("SUCCESS") else print("ERROR:", e) end
 
