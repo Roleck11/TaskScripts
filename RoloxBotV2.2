@@ -240,36 +240,37 @@ if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.com
     task.wait(1)
 end
 
-if Player.PlayerGui.NewsApp.Enabled then
-	local AbsPlay = Player.PlayerGui.NewsApp
-		:WaitForChild("EnclosingFrame")
-		:WaitForChild("MainFrame")
-		:WaitForChild("Contents")
-		:WaitForChild("PlayButton")
+repeat
+    if Player.PlayerGui.NewsApp.Enabled then
+        local AbsPlay = Player.PlayerGui.NewsApp
+            :WaitForChild("EnclosingFrame")
+            :WaitForChild("MainFrame")
+            :WaitForChild("Contents")
+            :WaitForChild("PlayButton")
 
-	firesignal(AbsPlay.MouseButton1Down)
-	firesignal(AbsPlay.MouseButton1Click)
-	firesignal(AbsPlay.MouseButton1Up)
-end
+        firesignal(AbsPlay.MouseButton1Down)
+        firesignal(AbsPlay.MouseButton1Click)
+        firesignal(AbsPlay.MouseButton1Up)
+    end
 
-if Player.PlayerGui.DialogApp.Dialog.ThemeColorDialog.Visible then
-    local s, e = pcall(function()
-        local colorButton = localPlayer.PlayerGui.DialogApp.Dialog.ThemeColorDialog:WaitForChild('Info'):WaitForChild('Response'):WaitForChild('ColorTemplate')
-        clickGuiButton(colorButton)
-        task.wait(5)
-        local doneButton = localPlayer.PlayerGui.DialogApp.Dialog.ThemeColorDialog:WaitForChild('Buttons'):WaitForChild('ButtonTemplate')
-        clickGuiButton(doneButton)
-    end)
-    if not s then RS.API["SettingsAPI/SetSetting"]:FireServer("theme_color", "black") game:Shutdown() end
-    PickColorConn:Disconnect()
-end
+    if Player.PlayerGui.DialogApp.Dialog.ThemeColorDialog.Visible then
+        local s, e = pcall(function()
+            local colorButton = localPlayer.PlayerGui.DialogApp.Dialog.ThemeColorDialog:WaitForChild('Info'):WaitForChild('Response'):WaitForChild('ColorTemplate')
+            clickGuiButton(colorButton)
+            task.wait(5)
+            local doneButton = localPlayer.PlayerGui.DialogApp.Dialog.ThemeColorDialog:WaitForChild('Buttons'):WaitForChild('ButtonTemplate')
+            clickGuiButton(doneButton)
+        end)
+        if not s then RS.API["SettingsAPI/SetSetting"]:FireServer("theme_color", "black") game:Shutdown() end
+        PickColorConn:Disconnect()
+    end
 
-if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Visible then
-	firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Click)
-	RoleChooserDialogConnection:Disconnect()
-end
-
-repeat task.wait(1) until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+    if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Visible then
+        firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Click)
+        RoleChooserDialogConnection:Disconnect()
+    end
+    task.wait(1)
+until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 
 if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.completed then
     print("Tutorial Status: False")
