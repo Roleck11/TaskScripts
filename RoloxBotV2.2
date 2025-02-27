@@ -1,12 +1,4 @@
 --[[
-
-UPDATE:
-Added Auto Tutorial for new ver
-
-]]
-
-
---[[
 _G.AgingPotionMode = false
 _G.EggHatchMode = true
 EggName = "Moon Egg"
@@ -35,7 +27,7 @@ if _G.AgingPotionMode and _G.EggHatchMode then
     game.Players.LocalPlayer:Kick("Select ONE Mode")
 end
 
-print("Executed Roleck Task Script - V4.0")
+print("Loading RoloxBot - v4.3")
 repeat task.wait() until game:IsLoaded() and game:GetService("ReplicatedStorage"):FindFirstChild("ClientModules") and game:GetService("ReplicatedStorage").ClientModules:FindFirstChild("Core") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager") and game:GetService("ReplicatedStorage").ClientModules.Core:FindFirstChild("UIManager").Apps:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp") and game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TransitionsApp"):FindFirstChild("Whiteout")
 
 local RS = game:GetService("ReplicatedStorage")
@@ -46,18 +38,14 @@ local RouterClient = require(RS.ClientModules.Core:WaitForChild("RouterClient"):
 local Main_Menu = require(RS.ClientModules.Core.UIManager.Apps.MainMenuApp)
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LiveOpsMapSwap = require(game:GetService("ReplicatedStorage").SharedModules.Game.LiveOpsMapSwap)
-
 local LegacyTutorial = require(ReplicatedStorage.ClientModules:WaitForChild('Game'):WaitForChild('Tutorial'):WaitForChild('LegacyTutorial'))
 
 local PetName = ""
 local selectedPetID = ""
 local MainPet = ""
-
 local numHatched = 0
 
-pet_L = 0
-pet_UR = 0
-pet_R = 0
+pet_L, pet_UR, pet_R = 0, 0, 0
 
 game.Players.LocalPlayer.Idled:Connect(function() 
     game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame) 
@@ -81,6 +69,101 @@ function clickGuiButton(button: Instance, xOffset: number, yOffset: number)
 	task.wait()
 end
 
+function dailyLoginAppClick()
+	if not Player.PlayerGui.DailyLoginApp.Enabled then return end
+	Player.PlayerGui.DailyLoginApp:WaitForChild("Frame")
+	Player.PlayerGui.DailyLoginApp.Frame:WaitForChild("Body")
+	Player.PlayerGui.DailyLoginApp.Frame.Body:WaitForChild("Buttons")
+    pcall(function()
+        for _, v in Player.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetDescendants() do
+            if v.Name == "TextLabel" then
+                if v.Text == "CLOSE" then
+                    clickGuiButton(v.Parent.Parent)
+                    task.wait(1)
+                elseif v.Text == "CLAIM!" then
+                    firesignal(v.Parent.Parent.MouseButton1Down)
+                    firesignal(v.Parent.Parent.MouseButton1Click)
+                    firesignal(v.Parent.Parent.MouseButton1Up)
+                    task.wait(.2)
+                    firesignal(v.Parent.Parent.MouseButton1Down)
+                    firesignal(v.Parent.Parent.MouseButton1Click)
+                    firesignal(v.Parent.Parent.MouseButton1Up)
+                end
+            end
+        end
+    end)
+end
+
+-- Dismiss Popups
+RoleChooserDialogConnection = Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog:GetPropertyChangedSignal("Visible"):Connect(function()
+	task.wait()
+	if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Visible then
+		firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Down)
+		firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Click)
+		firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Up)
+		RoleChooserDialogConnection:Disconnect()
+	end
+end)
+
+RobuxProductDialogConnection1 = Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog:GetPropertyChangedSignal("Visible"):Connect(function()
+	if not Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then return end
+	Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog:WaitForChild("Buttons")
+	task.wait()
+	for _, v in Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetDescendants() do
+		if v.Name == "TextLabel" then
+			if v.Text == "No Thanks" then
+				firesignal(v.Parent.Parent.MouseButton1Down)
+				firesignal(v.Parent.Parent.MouseButton1Click)
+				firesignal(v.Parent.Parent.MouseButton1Up)
+				RobuxProductDialogConnection1:Disconnect()
+			end
+		end
+	end
+end)
+
+
+RobuxProductDialogConnection2 = Player.PlayerGui.DialogApp.Dialog:GetPropertyChangedSignal("Visible"):Connect(function()
+	if not Player.PlayerGui.DialogApp.Dialog.Visible then return end
+	Player.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
+	if not Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then return end
+	Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog:WaitForChild("Buttons")
+	task.wait()
+	for _, v in Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetDescendants() do
+		if v.Name == "TextLabel" then
+			if v.Text == "No Thanks" then
+				firesignal(v.Parent.Parent.MouseButton1Down)
+				firesignal(v.Parent.Parent.MouseButton1Click)
+				firesignal(v.Parent.Parent.MouseButton1Up)
+				RobuxProductDialogConnection2:Disconnect()
+			end
+		end
+	end
+end)
+
+PickColorConn = Player.PlayerGui.DialogApp.Dialog.ThemeColorDialog:GetPropertyChangedSignal("Visible"):Connect(function()
+    if not Player.PlayerGui.DialogApp.Dialog.ThemeColorDialog.Visible then return end
+    local colorButton = localPlayer.PlayerGui.DialogApp.Dialog.ThemeColorDialog:WaitForChild('Info'):WaitForChild('Response'):WaitForChild('ColorTemplate')
+
+    if not colorButton then
+        return
+    end
+    clickGuiButton(colorButton)
+    task.wait(5)
+
+    local doneButton = localPlayer.PlayerGui.DialogApp.Dialog.ThemeColorDialog:WaitForChild('Buttons'):WaitForChild('ButtonTemplate')
+    if not doneButton then
+        return
+    end
+
+    clickGuiButton(doneButton)
+    PickColorConn:Disconnect()
+end)
+
+DailyClaimConnection = Player.PlayerGui.DailyLoginApp:GetPropertyChangedSignal("Enabled"):Connect(function()
+	dailyLoginAppClick()
+end)
+
+-- Starter Tutorial
 function CompleteStarterTutorial()
     local success, errorMessage = pcall(function()
         --task.wait(1)
@@ -93,9 +176,7 @@ function CompleteStarterTutorial()
         ReplicatedStorage.API['LegacyTutorialAPI/EquipTutorialEgg']:FireServer()
         print('EquipTutorialEgg')
         task.wait(1)
-        --ReplicatedStorage.API['LegacyTutorialAPI/AddTutorialQuest']:FireServer()
-        --print('AddTutorialQuest')
-        --task.wait(1)
+
         ReplicatedStorage.API['LegacyTutorialAPI/AddHungryAilmentToTutorialEgg']:FireServer()
         print('AddHungryAilmentToTutorialEgg')
         task.wait(1)
@@ -153,49 +234,42 @@ function CheckStarterEgg()
 end
 
 if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.completed then
-    print('New Acc Detected! Setting theme colour..')
+    print('Setting theme colour..')
 
     RS.API["SettingsAPI/SetSetting"]:FireServer("theme_color", "black")
     task.wait(1)
 end
 
-if not (game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")) then
-    repeat
-        if Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton.Visible then
-            clickGuiButton(Player.PlayerGui.NewsApp.EnclosingFrame.MainFrame.Contents.PlayButton)
-        end
-        if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.Visible then
-            clickGuiButton(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby)
-        end
-        task.wait(1.1)
-        -- After Choose Parent
-        Player.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
-        if Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
-            for i,v in pairs(Player.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
-                if v.ClassName == "ImageButton" then 
-                    clickGuiButton(v)
-                end
-            end
-        end
-        task.wait()
-        Player.PlayerGui:WaitForChild("DailyLoginApp")
-        if Player.PlayerGui.DailyLoginApp.Enabled and Player.PlayerGui.DailyLoginApp.Frame.Visible then 
-            for i,v in pairs(Player.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
-                if v.Name == "ClaimButton" then
-                    clickGuiButton(v)
-                end 
-            end
-        end
-        game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
-        if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
-            for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
-                if v.ClassName == "ImageButton" then 
-                    clickGuiButton(v)
-                end
-            end
-        end
-    until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+if Player.PlayerGui.NewsApp.Enabled then
+	local AbsPlay = Player.PlayerGui.NewsApp
+		:WaitForChild("EnclosingFrame")
+		:WaitForChild("MainFrame")
+		:WaitForChild("Contents")
+		:WaitForChild("PlayButton")
+
+	firesignal(AbsPlay.MouseButton1Down)
+	firesignal(AbsPlay.MouseButton1Click)
+	firesignal(AbsPlay.MouseButton1Up)
 end
+
+if Player.PlayerGui.DialogApp.Dialog.ThemeColorDialog.Visible then
+    local s, e = pcall(function()
+        local colorButton = localPlayer.PlayerGui.DialogApp.Dialog.ThemeColorDialog:WaitForChild('Info'):WaitForChild('Response'):WaitForChild('ColorTemplate')
+        clickGuiButton(colorButton)
+        task.wait(5)
+        local doneButton = localPlayer.PlayerGui.DialogApp.Dialog.ThemeColorDialog:WaitForChild('Buttons'):WaitForChild('ButtonTemplate')
+        clickGuiButton(doneButton)
+    end)
+    if not s then RS.API["SettingsAPI/SetSetting"]:FireServer("theme_color", "black") game:Shutdown() end
+    PickColorConn:Disconnect()
+end
+
+if Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Visible then
+	firesignal(Player.PlayerGui.DialogApp.Dialog.RoleChooserDialog.Baby.MouseButton1Click)
+	RoleChooserDialogConnection:Disconnect()
+end
+
+repeat task.wait(1) until game:GetService("Players").LocalPlayer.Character and workspace.Camera.CameraSubject == game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 
 if not ClientData.get_data()[game.Players.LocalPlayer.Name].tutorial_manager.completed then
     print("Tutorial Status: False")
@@ -304,39 +378,6 @@ task.spawn(function()
         end)
         if not a then print(b) end
         task.wait(1)
-    end
-end)
-
-task.spawn(function()
-    repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    task.wait(4)
-    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("RobuxProductDialog")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.RobuxProductDialog.Buttons:GetChildren()) do 
-            if v.ClassName == "ImageButton" then 
-                clickGuiButton(v)
-            end
-        end
-    end
-    wait(0.5)
-    game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("DailyLoginApp")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Enabled and game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DailyLoginApp.Frame.Body.Buttons:GetChildren()) do 
-            if v.Name == "ClaimButton" then
-                clickGuiButton(v)
-                task.wait(0.5)
-                clickGuiButton(v)
-            end 
-        end
-    end
-    wait(0.5)
-    game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog:WaitForChild("UpdatesDialog")
-    if game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Visible then 
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.DialogApp.Dialog.UpdatesDialog.Buttons:GetChildren()) do 
-            if v.ClassName == "ImageButton" then 
-                clickGuiButton(v)
-            end
-        end
     end
 end)
 
@@ -1913,7 +1954,7 @@ spawn(function()
             if (not CheckTaskExist("walk")) and (not CheckTaskExist("ride")) then
                 if taskName == "dirty" and not CheckTaskExist("dirty") then
                     spawn(function() task.wait(30) 
-                        RS.API:WaitForChild("AdoptAPI/BabyJump"):FireServer(Player.Character)
+                        --RS.API:WaitForChild("AdoptAPI/BabyJump"):FireServer(Player.Character)
                         RS.API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(ClientData.get("char_wrapper")["char"])
                     end)
                     print("[BABY] - Waiting for Dirty Task to end")
@@ -1924,7 +1965,7 @@ spawn(function()
                     print("[BABY] - Dirty Task Ended")
                 elseif taskName == "sleepy" and not CheckTaskExist("sleepy") then
                     spawn(function() task.wait(30) 
-                        RS.API:WaitForChild("AdoptAPI/BabyJump"):FireServer(Player.Character)
+                        --RS.API:WaitForChild("AdoptAPI/BabyJump"):FireServer(Player.Character)
                         RS.API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(ClientData.get("char_wrapper")["char"])
                     end)
                     print("[BABY] - Waiting for Sleepy Task to end")
@@ -1935,7 +1976,7 @@ spawn(function()
                     print("[BABY] - Sleepy Task Ended")
                 elseif taskName == "bored" and not CheckTaskExist("bored") then
                     spawn(function() task.wait(30) 
-                        RS.API:WaitForChild("AdoptAPI/BabyJump"):FireServer(Player.Character)
+                        --RS.API:WaitForChild("AdoptAPI/BabyJump"):FireServer(Player.Character)
                         RS.API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(ClientData.get("char_wrapper")["char"])
                     end)
                     print("[BABY] - Waiting for Bored Task to end")
@@ -1992,7 +2033,7 @@ spawn(function()
                     end
                 end
             end
-            RS.API:WaitForChild("AdoptAPI/BabyJump"):FireServer(Player.Character)
+            --RS.API:WaitForChild("AdoptAPI/BabyJump"):FireServer(Player.Character)
             RS.API["AdoptAPI/MakeBabyJumpOutOfSeat"]:FireServer(ClientData.get("char_wrapper")["char"])
 
             task.wait(3)
